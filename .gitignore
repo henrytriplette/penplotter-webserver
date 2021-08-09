@@ -1,2 +1,4 @@
-venv/
-uploads/
+venv/*
+__pycache__/*
+uploads/*
+config.ini
