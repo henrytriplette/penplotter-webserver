@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Title</title>
+        <title>Plotter Webserver</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -12,14 +12,170 @@
 
     </head>
     <body>
-      <h1>File Upload</h1>
-      <form action="{{ url_for('upload_files') }}" class="dropzone">
-      </form>
+
+      <!--Uploader-->
+      <section class="uk-section">
+        <div class="uk-container uk-container-small">
+          <h3>File Upload</h3>
+          <form id="uploadFiles" action="{{ url_for('upload_files') }}" class="dropzone"></form>
+        </div>
+      </section>
+      <!--Uploader-->
+
+      <!--Uploaded-->
+      <section class="uk-section">
+        <div class="uk-container uk-container-small">
+          <h3>File Uploaded</h3>
+          <a href="#" class="updateFiles">updateFiles</a>
+          <ul id="fileList">
+          {%- for item in files.children recursive %}
+              <li>{{ item.name }}
+              {%- if item.children -%}
+                  <ul>{{ loop(item.children) }}</ul>
+              {%- endif %}</li>
+          {%- endfor %}
+          </ul>
+        </div>
+      </section>
+      <!--Uploaded-->
+
+      <!--Settings-->
+      <section class="uk-section">
+        <div class="uk-container uk-container-small">
+          <form id="plotterData">
+              <fieldset class="uk-fieldset uk-grid-small" uk-grid>
+
+                  <legend class="uk-legend">Plotter Control</legend>
+
+                  <div class="uk-width-1-2@s">
+                    <label class="uk-form-label" for="form-stacked-text">port</label>
+                    <a href="#" class="updatePorts">updatePorts</a>
+                    <div class="uk-margin">
+                        <select id="portList" class="uk-select" name="port">
+                        </select>
+                    </div>
+                  </div>
+                  <div class="uk-width-1-2@s">
+                    <label class="uk-form-label" for="form-stacked-text">baudrate</label>
+                    <div class="uk-margin">
+                        <select id="baudRate" class="uk-select" name="baudrate">
+                            <option value="9600">9600</option>
+                        </select>
+                    </div>
+                  </div>
+                  <div class="uk-width-1-2@s">
+                    <label class="uk-form-label" for="form-stacked-text">tasmota</label>
+                    <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                        <label><input id="tasmota"  class="uk-checkbox" type="checkbox" name="tasmota" checked> Shutdown on complete</label>
+                    </div>
+                  </div>
+                  <div class="uk-width-1-2@s">
+                    <label class="uk-form-label" for="form-stacked-text">device</label>
+                    <div class="uk-margin">
+                        <select class="uk-select" name="device">
+                            <option value="7475a">HP 7475A</option>
+                            <option value="mp4200">Graptech MP4200</option>
+                        </select>
+                    </div>
+                  </div>
+
+              </fieldset>
+          </form>
+
+          <a href="#" class="startPlot">startPlot</a>
+        </div>
+      </section>
+      <!--Settings-->
 
       <!-- UIkit JS -->
       <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/js/uikit.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/js/uikit-icons.min.js"></script>
 
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+      <script>
+        Dropzone.autoDiscover = false;
+
+        jQuery( document ).ready(function() {
+
+          // Populate list on first start
+          updateFiles();
+          updatePorts();
+
+          // Create uploader
+          const uploadFiles = new Dropzone("#uploadFiles");
+          uploadFiles.on("complete", function(file) {
+            updateFiles(); // Update file list on upload completed
+          });
+
+          // Update file
+          jQuery(".updateFiles").click(function(e) {
+            e.preventDefault();
+            updateFiles();
+          });
+
+          // Update ports
+          jQuery(".updatePorts").click(function(e) {
+            e.preventDefault();
+            updatePorts();
+          });
+
+          // Start Plot
+          jQuery(".startPlot").click(function(e) {
+            e.preventDefault();
+            startPlot();
+          });
+        })
+
+        // Update port list
+        function updatePorts() {
+          axios.get('/update_ports')
+            .then(function (response) {
+              // handle success
+              if (response.status == 200) {
+                // Remove old content from list
+                jQuery('#portList').html('');
+                console.log(response);
+                for (var content of response.data.content) {
+                  jQuery('#portList').append('<option value="'+ content +'">'+ content +'</option>')
+                }
+              }
+            })
+            .catch(function (error) {
+              console.error(error);
+            })
+            .then(function () {
+            });
+        }
+
+        // Update file list
+        function updateFiles() {
+          axios.get('/update_files')
+            .then(function (response) {
+              // handle success
+              if (response.status == 200) {
+                // Remove old content from list
+                jQuery('#fileList').html('');
+
+                for (var content of response.data.content) {
+                  jQuery('#fileList').append('<li>'+content.name+'</li>')
+                }
+              }
+            })
+            .catch(function (error) {
+              console.error(error);
+            })
+            .then(function () {
+            });
+        }
+
+        // Start plotting
+        function startPlot() {
+          const plotterData = jQuery('#plotterData').serialize()
+          console.log(plotterData);
+        }
+      </script>
     </body>
 </html>

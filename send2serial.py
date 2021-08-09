@@ -101,9 +101,11 @@ def plotter_cmd(tty, cmd, get_answer=False):
         raise e
 
 def listComPorts():
+    ports = dict(name='ports', content=[])
     for i in serial.tools.list_ports.comports():
-        print(str(i).split(" ")[0])
-
+        ports['content'].append(str(i).split(" ")[0])
+    return ports
+    
 def sendToPlotter(hpglfile, port = 'COM3', baud = 9600, plotter = '7475a'):
     print(plotter)
     input_bytes = None
