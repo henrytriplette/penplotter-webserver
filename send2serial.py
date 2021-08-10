@@ -124,6 +124,7 @@ def sendToPlotter(socketio, hpglfile, port = 'COM3', baud = 9600, plotter = '747
         try:
             tty = serial.Serial(port = port, baudrate = 9600, parity = serial.PARITY_NONE, stopbits = serial.STOPBITS_ONE, bytesize = serial.EIGHTBITS, xonxoff = True, timeout = 2.0)
         except SerialException as e:
+            socketio.emit('error', {'error': repr(e)})
             print(repr(e))
             return False
     else:
@@ -155,11 +156,13 @@ def sendToPlotter(socketio, hpglfile, port = 'COM3', baud = 9600, plotter = '747
         print(e)
 
         socketio.emit('error', {'data': '*** Error initializing the plotter!'})
+        socketio.emit('error', {'data': str(e)})
 
         # sys.exit(1)
         return
 
     print('Buffer size of plotter is', bufsz, 'bytes.')
+    socketio.emit('status_log', {'data': 'Buffer size of plotter is ' + str(bufsz) + ' bytes.'})
 
     total_bytes_written = 0
 
@@ -167,6 +170,7 @@ def sendToPlotter(socketio, hpglfile, port = 'COM3', baud = 9600, plotter = '747
         status = plotter_cmd(tty, b'\033.O', True)
         if (status & (EXT_STATUS_VIEW | EXT_STATUS_LEVER)):
             print('*** Printer is viewing plot, pausing data.')
+            socketio.emit('status_log', {'data': '*** Printer is viewing plot, pausing data.'})
             time.sleep(5.0)
             continue
 
@@ -192,6 +196,7 @@ def sendToPlotter(socketio, hpglfile, port = 'COM3', baud = 9600, plotter = '747
 
         else:
             print(f'{percent:.2f}%, {bufsz_read} byte added.')
+            socketio.emit('status_log', {'data': f'{percent:.2f}%, {bufsz_read} byte added.'})
 
         tty.write(data)
         total_bytes_written += bufsz_read

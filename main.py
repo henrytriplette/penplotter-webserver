@@ -36,16 +36,16 @@ def plot(file, port, baudrate = '9600', device = '7475a', poweroff = 'off'):
         if os.path.exists(file):
 
             # Tasmota - check for on
-            # if poweroff == 'on':
-                # print(tasmota.tasmota_setStatus('on'))
-                # time.sleep(2) # Just to be sure, wait 5 seconds
+            if poweroff == 'on':
+                tasmota.tasmota_setStatus(socketio, 'on')
+                time.sleep(2) # Just to be sure, wait 5 seconds
 
             # Start printing
             send2serial.sendToPlotter(socketio, str(file), str(port), int(baudrate), str(device))
 
             # Tasmota - turn off plotter
-            # if poweroff == 'on':
-                # print(tasmota.tasmota_setStatus('off'))
+            if poweroff == 'on':
+                tasmota.tasmota_setStatus(socketio, 'off')
 
         else:
             return socketio.emit('error', {'data': 'Please select a valid .hpgl file'})
@@ -98,10 +98,12 @@ def delete_file():
 
         # Delete file
         if os.path.exists(app.config['UPLOAD_PATH'] + "/" + filename):
-          os.remove(app.config['UPLOAD_PATH'] + "/" + filename)
-          return 'Deleted: ' + filename
+            os.remove(app.config['UPLOAD_PATH'] + "/" + filename)
+            socketio.emit('status_log', {'data': 'Deleted: ' + filename})
+            return 'Deleted: ' + filename
         else:
-          return 'The file does not exist'
+            socketio.emit('error', {'data': 'The file does not exist'})
+            return 'The file does not exist'
 
 # Get Plotter settings from UI
 @app.route('/start_plot', methods=['GET', 'POST'])

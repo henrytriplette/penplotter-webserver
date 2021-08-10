@@ -1,0 +1,27 @@
+{
+  "name": "plotter-webserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.py",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "npx mix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/henrytriplette/penplotter-webserver.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/henrytriplette/penplotter-webserver/issues"
+  },
+  "homepage": "https://github.com/henrytriplette/penplotter-webserver#readme",
+  "devDependencies": {
+    "laravel-mix": "^6.0.27"
+  }
+}
