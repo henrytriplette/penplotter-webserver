@@ -27,29 +27,26 @@ def make_tree(path):
     return tree
 
 def plot(file, port, baudrate = '9600', device = '7475a', poweroff = 'off'):
-    if not port or port == '?':
-        print('Avaliable Serial Ports: \n')
-    else:
-        if file:
-            if os.path.exists(file):
+    if file:
+        if os.path.exists(file):
 
-                # Tasmota - check for on
-                if poweroff == 'on':
-                    print(tasmota.tasmota_setStatus('on'))
-                    time.sleep(5) # Just to be sure, wait 5 seconds
+            # Tasmota - check for on
+            if poweroff == 'on':
+                print(tasmota.tasmota_setStatus('on'))
+                time.sleep(5) # Just to be sure, wait 5 seconds
 
-                # Start printing
-                send2serial.sendToPlotter(str(file), str(port), int(baudrate), str(device) )
+            # Start printing
+            send2serial.sendToPlotter(str(file), str(port), int(baudrate), str(device) )
 
-                # Tasmota - turn off plotter
-                if poweroff == 'on':
-                    print(tasmota.tasmota_setStatus('off'))
-                    time.sleep(5) # Just to be sure, wait 5 seconds
+            # Tasmota - turn off plotter
+            if poweroff == 'on':
+                print(tasmota.tasmota_setStatus('off'))
+                time.sleep(5) # Just to be sure, wait 5 seconds
 
-            else:
-                print('Please select a valid .hpgl file')
         else:
-            print('Please select a valid file')
+            return 'Please select a valid .hpgl file'
+    else:
+        return 'Please select a valid file'
 
 @app.errorhandler(413)
 def too_large(e):
@@ -87,6 +84,21 @@ def update_files():
 def update_ports():
     ports = send2serial.listComPorts()
     return ports
+
+# Get Plotter settings from UI
+@app.route('/start_plot', methods=['GET', 'POST'])
+def start_plot():
+    if request.method == "POST":
+        file = app.config['UPLOAD_PATH'] + '/' + request.form.get('file')
+        port = request.form.get('port')
+        baudrate = request.form.get('baudrate')
+        tasmota = request.form.get('tasmota')
+        device = request.form.get('device')
+
+        info = plot(file, port, baudrate, device, tasmota)
+
+        print(file)
+        return info
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
