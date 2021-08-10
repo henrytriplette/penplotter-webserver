@@ -69,6 +69,29 @@ function deleteFile(element) {
     .then(function() {});
 }
 
+// Display card
+function closeCard(element) {
+  const card = jQuery(element).data('card');
+
+  jQuery(element).addClass('uk-hidden')
+  jQuery("#"+card).addClass('uk-hidden')
+  jQuery(".showCard[data-card='"+card+"']").removeClass('uk-hidden')
+}
+
+function showCard(element) {
+  const card = jQuery(element).data('card');
+
+  jQuery(element).addClass('uk-hidden')
+  jQuery("#"+card).removeClass('uk-hidden')
+  jQuery(".closeCard[data-card='"+card+"']").removeClass('uk-hidden')
+}
+
+// Clear Logs
+function clearLog() {
+  // Remove old content from log
+  jQuery('#statusLog').html('');
+}
+
 // Start plotting
 function startPlot() {
   const plotterData = jQuery('#plotterData').serializeArray()

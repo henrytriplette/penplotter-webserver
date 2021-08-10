@@ -9,89 +9,220 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/css/uikit.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.css">
 
-        <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
     </head>
     <body>
 
-      <!--Uploader-->
-      <section class="uk-section">
-        <div class="uk-container uk-container-small">
-          <h3>File Upload</h3>
-          <form id="uploadFiles" action="{{ url_for('upload_files') }}" class="dropzone"></form>
+      <!--HEADER-->
+      <header id="top-head" class="uk-position-fixed">
+        <div class="uk-container uk-container-expand uk-background-primary">
+          <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
+            <div class="uk-navbar-left">
+              <div class="uk-navbar-item uk-hidden@m">
+                <a class="uk-logo" href="#"><img class="custom-logo" src="{{url_for('static', filename='img/logo.png')}}" alt=""></a>
+              </div>
+            </div>
+            <div class="uk-navbar-right">
+              <ul class="uk-navbar-nav">
+                <!-- <li><a class="uk-navbar-toggle" data-uk-toggle data-uk-navbar-toggle-icon href="#offcanvas-nav" title="Offcanvas" data-uk-tooltip></a></li> -->
+              </ul>
+            </div>
+          </nav>
         </div>
-      </section>
-      <!--Uploader-->
+      </header>
+      <!--/HEADER-->
 
-      <!--Uploaded-->
-      <section class="uk-section">
-        <div class="uk-container uk-container-small">
-          <h3>File Uploaded</h3>
-          <a href="#" class="updateFiles">updateFiles</a>
-          <ul id="fileList" class="uk-list uk-list-divider"></ul>
+      <!-- LEFT BAR -->
+      <aside id="left-col" class="uk-light uk-visible@m">
+        <div class="left-logo uk-flex uk-flex-middle">
+          <img class="custom-logo" src="{{url_for('static', filename='img/logo.png')}}" alt="">
         </div>
-      </section>
-      <!--Uploaded-->
+        <div class="left-content-box content-box-dark">
+          <img src="{{url_for('static', filename='img/user.png')}}" alt="" class="profile-img">
+          <h4 class="uk-text-center uk-margin-remove-vertical text-light">Web Plot</h4>
+        </div>
 
-      <!--Settings-->
-      <section class="uk-section">
-        <div class="uk-container uk-container-small">
-          <form id="plotterData">
-              <fieldset class="uk-fieldset uk-grid-small" uk-grid>
+        <div class="left-nav-wrap">
+          <ul class="uk-nav uk-nav-default uk-nav-parent-icon" data-uk-nav>
+            <li class="uk-nav-header">ACTIONS</li>
+            <!-- <li><a href="#"><span data-uk-icon="icon: comments" class="uk-margin-small-right"></span>Messages</a></li> -->
+          </ul>
+          <div class="left-content-box uk-margin-top">
 
-                  <legend class="uk-legend">Plotter Control</legend>
+              <h5>Reports</h5>
+              <div>
+                <span class="uk-text-small">Traffic <small>(+50)</small></span>
+                <progress class="uk-progress" value="50" max="100"></progress>
+              </div>
+          </div>
 
-                  <input id="fileName" name="file" type="hidden">
+        </div>
+        <div class="bar-bottom">
+          <ul class="uk-subnav uk-flex uk-flex-center uk-child-width-1-5" data-uk-grid>
+            <li>
+              <a href="#" class="uk-icon-link" data-uk-icon="icon: home" title="Home" data-uk-tooltip></a>
+            </li>
+            <li>
+              <a href="#" class="uk-icon-link" data-uk-icon="icon: settings" title="Settings" data-uk-tooltip></a>
+            </li>
+            <li>
+              <a href="#" class="uk-icon-link" data-uk-icon="icon: social"  title="Social" data-uk-tooltip></a>
+            </li>
 
-                  <div class="uk-width-1-2@s">
-                    <label class="uk-form-label" for="form-stacked-text">port</label>
-                    <a href="#" class="updatePorts">updatePorts</a>
-                    <div class="uk-margin">
-                        <select id="portList" class="uk-select" name="port">
-                        </select>
+            <li>
+              <a href="#" class="uk-icon-link" data-uk-tooltip="Sign out" data-uk-icon="icon: sign-out"></a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+      <!-- /LEFT BAR -->
+
+      <!-- CONTENT -->
+      <div id="content" data-uk-height-viewport="expand: true">
+        <div class="uk-container uk-container-expand">
+
+          <div class="uk-grid uk-grid-medium" data-uk-grid uk-sortable="handle: .sortable-icon">
+
+            <!-- Uploader -->
+            <div class="uk-width-1-2@l">
+              <div class="uk-card uk-card-default uk-card-small uk-card-hover">
+                <div class="uk-card-header">
+                  <div class="uk-grid uk-grid-small">
+                    <div class="uk-width-auto"><h4>File Upload</h4></div>
+                    <div class="uk-width-expand uk-text-right panel-icons">
+                      <a href="#" class="uk-icon-link sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
+                      <!-- <a href="#" class="uk-icon-link" title="Configuration" data-uk-tooltip data-uk-icon="icon: cog"></a> -->
+                      <a href="#" class="uk-icon-link closeCard" data-card="uploadFiles-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
+                      <a href="#" class="uk-icon-link showCard uk-hidden" data-card="uploadFiles-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
                     </div>
                   </div>
-                  <div class="uk-width-1-2@s">
-                    <label class="uk-form-label" for="form-stacked-text">baudrate</label>
-                    <div class="uk-margin">
-                        <select id="baudRate" class="uk-select" name="baudrate">
-                            <option value="9600">9600</option>
-                        </select>
-                    </div>
+                </div>
+                <div id="uploadFiles-card" class="uk-card-body">
+                  <div class="chart-container">
+                    <form id="uploadFiles" action="{{ url_for('upload_files') }}" class="dropzone"></form>
                   </div>
-                  <div class="uk-width-1-2@s">
-                    <label class="uk-form-label" for="form-stacked-text">tasmota</label>
-                    <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
-                        <label><input id="tasmota" class="uk-checkbox" type="checkbox" name="tasmota" checked> Shutdown on complete</label>
-                    </div>
-                  </div>
-                  <div class="uk-width-1-2@s">
-                    <label class="uk-form-label" for="form-stacked-text">device</label>
-                    <div class="uk-margin">
-                        <select input="device" class="uk-select" name="device">
-                            <option value="7475a">HP 7475A</option>
-                            <option value="mp4200">Graptech MP4200</option>
-                        </select>
-                    </div>
-                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /Uploader -->
 
-              </fieldset>
-          </form>
+            <!-- Uploaded -->
+            <div class="uk-width-1-2@l">
+              <div class="uk-card uk-card-default uk-card-small uk-card-hover">
+                <div class="uk-card-header">
+                  <div class="uk-grid uk-grid-small">
+                    <div class="uk-width-auto"><h4>File Uploaded</h4></div>
+                    <div class="uk-width-expand uk-text-right panel-icons">
+                      <a href="#" class="uk-icon-link sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
+                      <a href="#" class="uk-icon-link updateFiles" title="Refresh List" data-uk-tooltip data-uk-icon="icon: refresh"></a>
+                      <a href="#" class="uk-icon-link closeCard" data-card="fileList-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
+                      <a href="#" class="uk-icon-link showCard uk-hidden" data-card="fileList-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
+                    </div>
+                  </div>
+                </div>
+                <div id="fileList-card" class="uk-card-body">
+                  <div class="chart-container">
+                    <ul id="fileList" class="uk-list uk-list-divider"></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /Uploaded -->
 
-          <a href="#" class="startPlot">startPlot</a>
+            <!-- Settings -->
+            <div class="uk-width-1-2@l">
+              <div class="uk-card uk-card-default uk-card-small uk-card-hover">
+                <div class="uk-card-header">
+                  <div class="uk-grid uk-grid-small">
+                    <div class="uk-width-auto"><h4>Plotter Settings</h4></div>
+                    <div class="uk-width-expand uk-text-right panel-icons">
+                      <a href="#" class="uk-icon-link sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
+                      <!-- <a href="#" class="uk-icon-link" title="Configuration" data-uk-tooltip data-uk-icon="icon: cog"></a> -->
+                      <a href="#" class="uk-icon-link closeCard" data-card="plotterData-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
+                      <a href="#" class="uk-icon-link showCard uk-hidden" data-card="plotterData-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
+                    </div>
+                  </div>
+                </div>
+                <div id="plotterData-card" class="uk-card-body">
+                  <div class="chart-container">
+                    <form id="plotterData">
+                        <fieldset class="uk-fieldset uk-grid-small" uk-grid>
+
+                            <input id="fileName" name="file" type="hidden">
+
+                            <div class="uk-width-1-2@s">
+                              <label class="uk-form-label" for="form-stacked-text">port</label>
+                              <a href="#" class="updatePorts">updatePorts</a>
+                              <div class="uk-margin">
+                                  <select id="portList" class="uk-select" name="port">
+                                  </select>
+                              </div>
+                            </div>
+                            <div class="uk-width-1-2@s">
+                              <label class="uk-form-label" for="form-stacked-text">baudrate</label>
+                              <div class="uk-margin">
+                                  <select id="baudRate" class="uk-select" name="baudrate">
+                                      <option value="9600">9600</option>
+                                  </select>
+                              </div>
+                            </div>
+                            <div class="uk-width-1-2@s">
+                              <label class="uk-form-label" for="form-stacked-text">tasmota</label>
+                              <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                                  <label><input id="tasmota" class="uk-checkbox" type="checkbox" name="tasmota" checked> Shutdown on complete</label>
+                              </div>
+                            </div>
+                            <div class="uk-width-1-2@s">
+                              <label class="uk-form-label" for="form-stacked-text">device</label>
+                              <div class="uk-margin">
+                                  <select input="device" class="uk-select" name="device">
+                                      <option value="7475a">HP 7475A</option>
+                                      <option value="mp4200">Graptech MP4200</option>
+                                  </select>
+                              </div>
+                            </div>
+
+                        </fieldset>
+                    </form>
+
+                    <a href="#" class="startPlot">startPlot</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /Settings -->
+
+            <!-- Status -->
+            <div class="uk-width-1-2@l">
+              <div class="uk-card uk-card-default uk-card-small uk-card-hover">
+                <div class="uk-card-header">
+                  <div class="uk-grid uk-grid-small">
+                    <div class="uk-width-auto"><h4>Print Status</h4></div>
+                    <div class="uk-width-expand uk-text-right panel-icons">
+                      <a href="#" class="uk-icon-link sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
+                      <a href="#" class="uk-icon-link clearLog" title="Clear Log" data-uk-tooltip data-uk-icon="icon:  trash"></a>
+                      <a href="#" class="uk-icon-link closeCard" data-card="statusLog-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
+                      <a href="#" class="uk-icon-link showCard uk-hidden" data-card="statusLog-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
+                    </div>
+                  </div>
+                </div>
+                <div id="statusLog-card" class="uk-card-body">
+                  <div class="chart-container">
+                    <code id="statusLog"></code>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /Status -->
+
+          </div>
+          <footer class="uk-section uk-section-small uk-text-center">
+            <hr>
+            <p class="uk-text-small uk-text-center">Copyright 2021 - <a href="https://github.com/henrytriplette/penplotter-webserver">Created by Henry Triplette</a></p>
+          </footer>
         </div>
-      </section>
-      <!--Settings-->
-
-      <!--Status-->
-      <section class="uk-section">
-        <div class="uk-container uk-container-small">
-          <h3>Print Status</h3>
-          <pre class="uk-height-medium uk-card uk-card-default uk-card-body">
-            <code id="statusLog"></code>
-          </pre>
-        </div>
-      </section>
-      <!--Status-->
+      </div>
+      <!-- /CONTENT -->
 
       <!-- UIkit JS -->
       <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/js/uikit.min.js"></script>
@@ -122,12 +253,10 @@
 
           // Set log window
           socket.on('status_log', function(msg, cb) {
-              console.log(msg);
               $('#statusLog').append('<br>' + $('<div/>').text(msg.data).html());
           });
 
           socket.on('error', function(msg, cb) {
-              console.log(msg);
               $('#statusLog').append('<br>' + $('<div/>').text(msg.data).html());
           });
 
@@ -165,10 +294,28 @@
             deleteFile(jQuery(this));
           });
 
+          // Clear Log
+          jQuery(".clearLog").click(function(e) {
+            e.preventDefault();
+            clearLog();
+          });
+
           // Start Plot
           jQuery(".startPlot").click(function(e) {
             e.preventDefault();
             startPlot();
+          });
+
+          // Show Cards
+          jQuery(".closeCard").click(function(e) {
+            e.preventDefault();
+            closeCard(jQuery(this));
+          });
+
+          // Hide Cards
+          jQuery(".showCard").click(function(e) {
+            e.preventDefault();
+            showCard(jQuery(this));
           });
         })
       </script>

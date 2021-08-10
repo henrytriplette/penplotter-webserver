@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "npx mix"
+    "watch": "npx mix watch"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,11 @@
   },
   "homepage": "https://github.com/henrytriplette/penplotter-webserver#readme",
   "devDependencies": {
-    "laravel-mix": "^6.0.27"
+    "browser-sync": "^2.27.5",
+    "browser-sync-webpack-plugin": "^2.3.0",
+    "laravel-mix": "^6.0.27",
+    "resolve-url-loader": "^4.0.0",
+    "sass": "^1.37.5",
+    "sass-loader": "^12.1.0"
   }
 }
