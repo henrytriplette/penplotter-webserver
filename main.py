@@ -1,7 +1,7 @@
 import os
 import time
 
-from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
 
 import send2serial
@@ -44,9 +44,9 @@ def plot(file, port, baudrate = '9600', device = '7475a', poweroff = 'off'):
                 time.sleep(5) # Just to be sure, wait 5 seconds
 
         else:
-            return 'Please select a valid .hpgl file'
+            return jsonify({"error": "Please select a valid .hpgl file",}), 403
     else:
-        return 'Please select a valid file'
+        return jsonify({"error": 'Please select a valid file',}), 403
 
 @app.errorhandler(413)
 def too_large(e):
