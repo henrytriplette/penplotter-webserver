@@ -85,20 +85,20 @@
 
             <!-- Uploader -->
             <div class="uk-width-1-2@l">
-              <div class="uk-card uk-card-default uk-card-small uk-card-hover">
-                <div class="uk-card-header">
+              <div class="uk-card uk-card-default uk-card-small mac-card">
+                <div class="uk-card-header mac-browser-bar">
                   <div class="uk-grid uk-grid-small">
                     <div class="uk-width-auto"><h4>File Upload</h4></div>
                     <div class="uk-width-expand uk-text-right panel-icons">
-                      <a href="#" class="uk-icon-link sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
                       <!-- <a href="#" class="uk-icon-link" title="Configuration" data-uk-tooltip data-uk-icon="icon: cog"></a> -->
-                      <a href="#" class="uk-icon-link closeCard" data-card="uploadFiles-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
-                      <a href="#" class="uk-icon-link showCard uk-hidden" data-card="uploadFiles-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-min sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-close closeCard" data-card="uploadFiles-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-max showCard uk-hidden" data-card="uploadFiles-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
                     </div>
                   </div>
                 </div>
                 <div id="uploadFiles-card" class="uk-card-body">
-                  <div class="chart-container">
+                  <div class="chart-container uk-panel uk-panel-scrollable">
                     <form id="uploadFiles" action="{{ url_for('upload_files') }}" class="dropzone"></form>
                   </div>
                 </div>
@@ -108,20 +108,20 @@
 
             <!-- Uploaded -->
             <div class="uk-width-1-2@l">
-              <div class="uk-card uk-card-default uk-card-small uk-card-hover">
-                <div class="uk-card-header">
+              <div class="uk-card uk-card-default uk-card-small mac-card">
+                <div class="uk-card-header mac-browser-bar">
                   <div class="uk-grid uk-grid-small">
                     <div class="uk-width-auto"><h4>File Uploaded</h4></div>
                     <div class="uk-width-expand uk-text-right panel-icons">
-                      <a href="#" class="uk-icon-link sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
-                      <a href="#" class="uk-icon-link updateFiles" title="Refresh List" data-uk-tooltip data-uk-icon="icon: refresh"></a>
-                      <a href="#" class="uk-icon-link closeCard" data-card="fileList-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
-                      <a href="#" class="uk-icon-link showCard uk-hidden" data-card="fileList-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-mix updateFiles" title="Refresh List" data-uk-tooltip data-uk-icon="icon: refresh"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-min sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-close closeCard" data-card="fileList-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-max showCard uk-hidden" data-card="fileList-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
                     </div>
                   </div>
                 </div>
                 <div id="fileList-card" class="uk-card-body">
-                  <div class="chart-container">
+                  <div class="chart-container uk-panel uk-panel-scrollable">
                     <ul id="fileList" class="uk-list uk-list-divider"></ul>
                   </div>
                 </div>
@@ -131,15 +131,15 @@
 
             <!-- Settings -->
             <div class="uk-width-1-2@l">
-              <div class="uk-card uk-card-default uk-card-small uk-card-hover">
-                <div class="uk-card-header">
+              <div class="uk-card uk-card-default uk-card-small mac-card">
+                <div class="uk-card-header mac-browser-bar">
                   <div class="uk-grid uk-grid-small">
                     <div class="uk-width-auto"><h4>Plotter Settings</h4></div>
                     <div class="uk-width-expand uk-text-right panel-icons">
-                      <a href="#" class="uk-icon-link sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
                       <!-- <a href="#" class="uk-icon-link" title="Configuration" data-uk-tooltip data-uk-icon="icon: cog"></a> -->
-                      <a href="#" class="uk-icon-link closeCard" data-card="plotterData-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
-                      <a href="#" class="uk-icon-link showCard uk-hidden" data-card="plotterData-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-min sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-close closeCard" data-card="plotterData-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-max showCard uk-hidden" data-card="plotterData-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
                     </div>
                   </div>
                 </div>
@@ -151,30 +151,36 @@
                             <input id="fileName" name="file" type="hidden">
 
                             <div class="uk-width-1-2@s">
-                              <label class="uk-form-label" for="form-stacked-text">port</label>
-                              <a href="#" class="updatePorts">updatePorts</a>
-                              <div class="uk-margin">
-                                  <select id="portList" class="uk-select" name="port">
-                                  </select>
+                              <label class="uk-form-label" for="form-stacked-text">COM Port</label>
+                              <div class="uk-margin-small">
+                                <div class="uk-grid uk-grid-small">
+                                  <div class="uk-width-expand">
+                                    <select id="portList" class="uk-select" name="port">
+                                    </select>
+                                  </div>
+                                  <div class="uk-width-auto uk-text-right panel-icons">
+                                    <a href="#" class="uk-icon-link mac-button updatePorts" title="Refresh Port List" data-uk-tooltip data-uk-icon="icon: refresh"></a>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                             <div class="uk-width-1-2@s">
-                              <label class="uk-form-label" for="form-stacked-text">baudrate</label>
-                              <div class="uk-margin">
+                              <label class="uk-form-label" for="form-stacked-text">Baudrate</label>
+                              <div class="uk-margin-small">
                                   <select id="baudRate" class="uk-select" name="baudrate">
                                       <option value="9600">9600</option>
                                   </select>
                               </div>
                             </div>
                             <div class="uk-width-1-2@s">
-                              <label class="uk-form-label" for="form-stacked-text">tasmota</label>
-                              <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                              <label class="uk-form-label" for="form-stacked-text">Tasmota Control</label>
+                              <div class="uk-margin-small uk-grid-small uk-child-width-auto uk-grid">
                                   <label><input id="tasmota" class="uk-checkbox" type="checkbox" name="tasmota" checked> Shutdown on complete</label>
                               </div>
                             </div>
                             <div class="uk-width-1-2@s">
-                              <label class="uk-form-label" for="form-stacked-text">device</label>
-                              <div class="uk-margin">
+                              <label class="uk-form-label" for="form-stacked-text">Plotting Device</label>
+                              <div class="uk-margin-small">
                                   <select input="device" class="uk-select" name="device">
                                       <option value="7475a">HP 7475A</option>
                                       <option value="mp4200">Graptech MP4200</option>
@@ -185,7 +191,7 @@
                         </fieldset>
                     </form>
 
-                    <a href="#" class="startPlot">startPlot</a>
+                    <a href="#" class="startPlot uk-button uk-button-primary uk-width-1-1 uk-margin-top">Start Plot</a>
                   </div>
                 </div>
               </div>
@@ -194,20 +200,20 @@
 
             <!-- Status -->
             <div class="uk-width-1-2@l">
-              <div class="uk-card uk-card-default uk-card-small uk-card-hover">
-                <div class="uk-card-header">
+              <div class="uk-card uk-card-default uk-card-small mac-card">
+                <div class="uk-card-header mac-browser-bar">
                   <div class="uk-grid uk-grid-small">
                     <div class="uk-width-auto"><h4>Print Status</h4></div>
                     <div class="uk-width-expand uk-text-right panel-icons">
-                      <a href="#" class="uk-icon-link sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
-                      <a href="#" class="uk-icon-link clearLog" title="Clear Log" data-uk-tooltip data-uk-icon="icon:  trash"></a>
-                      <a href="#" class="uk-icon-link closeCard" data-card="statusLog-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
-                      <a href="#" class="uk-icon-link showCard uk-hidden" data-card="statusLog-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-mix clearLog" title="Clear Log" data-uk-tooltip data-uk-icon="icon:  trash"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-min sortable-icon" title="Move" data-uk-tooltip data-uk-icon="icon: move"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-close closeCard" data-card="statusLog-card" title="Close" data-uk-tooltip data-uk-icon="icon: chevron-up"></a>
+                      <a href="#" class="uk-icon-link mac-button mac-max showCard uk-hidden" data-card="statusLog-card" title="Open" data-uk-tooltip data-uk-icon="icon: chevron-down"></a>
                     </div>
                   </div>
                 </div>
                 <div id="statusLog-card" class="uk-card-body">
-                  <div class="chart-container">
+                  <div class="chart-container uk-panel uk-panel-scrollable">
                     <code id="statusLog"></code>
                   </div>
                 </div>

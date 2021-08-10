@@ -1,3 +1,7 @@
+body
+  font-family: "Lucida Console", Monaco, monospace
+  font-size: 0.95rem
+
 /* -- Top navigation --
 #top-head
   z-index: 9
@@ -24,7 +28,7 @@
   bottom: 0
   overflow-x: hidden
   overflow-y: auto
-  background-color: #222A30
+  background-color: #333
   width: 240px
   z-index: 2
   transition: height 0.3s ease-out
@@ -89,7 +93,7 @@
 .bar-bottom
   border-top: 1px solid rgba(255, 255, 255, 0.07)
   padding: 15px 0
-  background-color: #222A30
+  background-color: rgba(0, 0, 0, 0.09)
   position: fixed
   left: 0
   right: 0
@@ -123,6 +127,10 @@
   margin-top: 52px
   padding: 30px 0 0 0
   background-color: #f7f7f7
+  background-image: url('../img/bg.jpg')
+  background-size: cover
+  background-repeat: no-repeat
+  background-position: center
   margin-left: 0
   transition: margin 0.2s cubic-bezier(0.4, 0, 0.2, 1)
 
@@ -181,19 +189,22 @@
 /* Charts
 .chart-container
   position: relative
-  min-height: 200px
+  min-height: 250px
   margin: 0 auto
 
+.uk-panel-scrollable
+  border: none
+
+/* Buttons
 .mac-card
   background-color: #333
-  padding: 45px 20px 20px
   box-sizing: border-box
   box-shadow: 0 0 25px rgba(0, 0, 0, .5)
   border-radius: 5px 5px 0 0
 
 .mac-browser-bar
   background: #f9f9f3
-  position: absolute
+  color: #333
   top: 0
   left: 0
   right: 0
@@ -201,13 +212,19 @@
   overflow: hidden
   border-radius: 5px 5px 0 0
 
+  h4
+    font-size: 0.95rem
+    text-transform: uppercase
+    line-height: 2rem
+    font-family: "Lucida Console", Monaco, monospace
+
 .mac-button
-  display: inline-block
-  float: left
+  width: 20px
+  height: 20px
+  padding: 5px
   border-radius: 50%
-  width: 15px
-  height: 15px
   margin-right: 5px
+  color: #FFF
 
 .mac-close
   background: #fc635d
@@ -216,6 +233,9 @@
   background: #fdbc40
 
 .mac-max
+  background: #fc8f5d
+
+.mac-mix
   background: #34c84a
 
 .mac-text
@@ -223,3 +243,18 @@
   color: #fff
   font-family: "Lucida Console", Monaco, monospace
   line-height: 1.5
+
+.selectFile
+  color: #fff
+  font-family: "Lucida Console", Monaco, monospace
+  font-size: 0.95rem
+  line-height: 0.85rem
+
+.selectFile:hover
+  background: #fff
+  color: #333
+  text-decoration: none
+
+footer
+  color: #fff
+  font-family: "Lucida Console", Monaco, monospace
