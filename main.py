@@ -3,6 +3,7 @@ import time
 
 from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
+from flask_socketio import SocketIO, emit
 
 import send2serial
 import tasmota
@@ -11,6 +12,10 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
 app.config['UPLOAD_EXTENSIONS'] = ['.svg', '.hpgl']
 app.config['UPLOAD_PATH'] = 'uploads'
+app.config['SECRET_KEY'] = '#tiUJ791&jPYI9N7Kj'
+app.config['DEBUG'] = True
+
+socketio = SocketIO(app)
 
 def make_tree(path):
     tree = dict(name=os.path.basename(path), content=[])
@@ -31,22 +36,21 @@ def plot(file, port, baudrate = '9600', device = '7475a', poweroff = 'off'):
         if os.path.exists(file):
 
             # Tasmota - check for on
-            if poweroff == 'on':
-                print(tasmota.tasmota_setStatus('on'))
-                time.sleep(5) # Just to be sure, wait 5 seconds
+            # if poweroff == 'on':
+                # print(tasmota.tasmota_setStatus('on'))
+                # time.sleep(2) # Just to be sure, wait 5 seconds
 
             # Start printing
-            send2serial.sendToPlotter(str(file), str(port), int(baudrate), str(device) )
+            send2serial.sendToPlotter(socketio, str(file), str(port), int(baudrate), str(device))
 
             # Tasmota - turn off plotter
-            if poweroff == 'on':
-                print(tasmota.tasmota_setStatus('off'))
-                time.sleep(5) # Just to be sure, wait 5 seconds
+            # if poweroff == 'on':
+                # print(tasmota.tasmota_setStatus('off'))
 
         else:
-            return jsonify({"error": "Please select a valid .hpgl file",}), 403
+            return socketio.emit('error', {'data': 'Please select a valid .hpgl file'})
     else:
-        return jsonify({"error": 'Please select a valid file',}), 403
+        return socketio.emit('error', {'data': 'Please select a valid file'})
 
 @app.errorhandler(413)
 def too_large(e):
@@ -85,6 +89,20 @@ def update_ports():
     ports = send2serial.listComPorts()
     return ports
 
+# Delete uploaded filed
+@app.route('/delete_file', methods=['GET', 'POST'])
+def delete_file():
+    if request.method == "POST":
+        data = request.get_json(silent=True)
+        filename = data.get('filename')
+
+        # Delete file
+        if os.path.exists(app.config['UPLOAD_PATH'] + "/" + filename):
+          os.remove(app.config['UPLOAD_PATH'] + "/" + filename)
+          return 'Deleted: ' + filename
+        else:
+          return 'The file does not exist'
+
 # Get Plotter settings from UI
 @app.route('/start_plot', methods=['GET', 'POST'])
 def start_plot():
@@ -95,10 +113,15 @@ def start_plot():
         tasmota = request.form.get('tasmota')
         device = request.form.get('device')
 
-        info = plot(file, port, baudrate, device, tasmota)
+        plot(file, port, baudrate, device, tasmota)
 
-        print(file)
-        return info
+        return 'Plotter Started'
+
+# On connection
+@socketio.event
+def connection(message):
+    print('Client connected')
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
+    # app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
+    socketio.run(app, host='127.0.0.1', port=5000, debug=True)

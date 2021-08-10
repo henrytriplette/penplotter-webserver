@@ -8,6 +8,7 @@ import os
 import serial
 import serial.tools.list_ports
 from serial import SerialException
+from flask_socketio import SocketIO, emit
 
 # import PySimpleGUI as sg
 import notification
@@ -105,8 +106,8 @@ def listComPorts():
     for i in serial.tools.list_ports.comports():
         ports['content'].append(str(i).split(" ")[0])
     return ports
-    
-def sendToPlotter(hpglfile, port = 'COM3', baud = 9600, plotter = '7475a'):
+
+def sendToPlotter(socketio, hpglfile, port = 'COM3', baud = 9600, plotter = '7475a'):
     print(plotter)
     input_bytes = None
     try:
@@ -115,6 +116,7 @@ def sendToPlotter(hpglfile, port = 'COM3', baud = 9600, plotter = '7475a'):
             input_bytes = ss.st_size
     except Exception as e:
         print('Error stat\'ing file', hpglfile, str(e))
+        socketio.emit('error', {'error': 'Error stat\'ing file'})
 
     hpgl = open(hpglfile, 'rb')
 
@@ -128,6 +130,7 @@ def sendToPlotter(hpglfile, port = 'COM3', baud = 9600, plotter = '7475a'):
         try:
             tty = serial.Serial(port, baudrate = 9600, timeout=2.0)
         except SerialException as e:
+            socketio.emit('error', {'error': repr(e)})
             print(repr(e))
             return False
 
@@ -150,6 +153,9 @@ def sendToPlotter(hpglfile, port = 'COM3', baud = 9600, plotter = '7475a'):
     except HPGLError as e:
         print('*** Error initializing the plotter!')
         print(e)
+
+        socketio.emit('error', {'data': '*** Error initializing the plotter!'})
+
         # sys.exit(1)
         return
 
@@ -176,11 +182,13 @@ def sendToPlotter(hpglfile, port = 'COM3', baud = 9600, plotter = '7475a'):
         if bufsz_read == 0:
             print('*** EOF reached, exiting.')
             notification.telegram_sendNotification('*** EOF reached, exiting.')
+            socketio.emit('status_log', {'data': '*** EOF reached, exiting.'})
             break
 
         if input_bytes != None:
             percent = 100.0 * total_bytes_written/input_bytes
             print(f'{percent:.2f}%, {total_bytes_written} byte written.')
+            socketio.emit('status_log', {'data': f'{percent:.2f}%, {total_bytes_written} byte written.'})
 
         else:
             print(f'{percent:.2f}%, {bufsz_read} byte added.')

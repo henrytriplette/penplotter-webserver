@@ -1,2 +1,4 @@
 pyserial
 requests
+Flask
+Flask-SocketIO
