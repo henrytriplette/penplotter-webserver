@@ -1,5 +1,6 @@
 import os
 import time
+import subprocess
 
 from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
@@ -51,6 +52,47 @@ def plot(file, port, baudrate = '9600', device = '7475a', poweroff = 'off'):
             return socketio.emit('error', {'data': 'Please select a valid .hpgl file'})
     else:
         return socketio.emit('error', {'data': 'Please select a valid file'})
+
+def convert(file, pagesize = 'a4', svgscale = 'a4', pageorientation = 'landscape'):
+    if file:
+        outputFile = file[:-4] + '-Converted.hpgl'
+
+        # Scale svg to desired paper size
+        args = 'vpype';
+        args += ' read "' + str(file) + '"'; #Read input svg
+
+        if (pageorientation == 'landscape'):
+            if (svgscale == 'a3'):
+                args += ' scaleto 39cm 26.7cm';
+            elif (svgscale == 'a4'):
+                args += ' scaleto 27.7cm 19cm';
+        else:
+            if (svgscale == 'a3'):
+                args += ' scaleto 27.7cm 40cm';
+            elif (svgscale == 'a4'):
+                args += ' scaleto 19cm 27.7cm';
+
+        args += ' write --device hp7475a';
+
+        args += ' --page-size ' + str(pagesize);
+
+        if (pageorientation == 'landscape'):
+            args += ' --landscape';
+
+        args += ' --center';
+        args += ' "' + str(outputFile) + '"'
+
+        rendering = subprocess.Popen(args)
+        rendering.wait() # Hold on till process is finished
+
+        # Delete file
+        if os.path.exists(file):
+            os.remove(file)
+            socketio.emit('status_log', {'data': 'Deleted SVG: ' + str(file)})
+        else:
+            socketio.emit('error', {'data': 'The file does not exist'})
+
+        return '- Exported ' + str(outputFile)
 
 @app.errorhandler(413)
 def too_large(e):
@@ -118,6 +160,19 @@ def start_plot():
         plot(file, port, baudrate, device, tasmota)
 
         return 'Plotter Started'
+
+# Start converting file using vpype
+@app.route('/start_conversion', methods=['GET', 'POST'])
+def start_conversion():
+    if request.method == "POST":
+        file = app.config['UPLOAD_PATH'] + '/' + request.form.get('file')
+        pagesize = request.form.get('pagesize')
+        svgscale = request.form.get('svgscale')
+        pageorientation = request.form.get('pageorientation')
+
+        output = convert(file, pagesize, svgscale, pageorientation)
+
+        return output
 
 # On connection
 @socketio.event

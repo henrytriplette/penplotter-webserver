@@ -69,6 +69,39 @@ function deleteFile(element) {
     .then(function() {});
 }
 
+// Handle file conversion
+function convertFileModal(element) {
+  const filename = jQuery(element).data('filename');
+  jQuery('#convertFile').val(filename)
+  UIkit.modal('#modal-convertFile').show();
+}
+
+// Start conversion
+function convertFile() {
+  const convertData = jQuery('#convertData').serializeArray()
+  console.log('convertData', convertData);
+
+  // Validation
+  if (jQuery('#convertFile').val() == '') {
+    notify('No *.svg file selected', 'danger');
+    return false
+  }
+
+  axios.post('/start_conversion', jQuery('#convertData').serialize())
+    .then(function(response) {
+      console.log(response);
+      // handle success
+      if (response.status == 200) {
+        updateFiles();
+        UIkit.modal('#modal-convertFile').hide();
+        notify(response.data, 'warning')
+      }
+    })
+    .catch(function(error) {
+      console.error(error);
+    });
+}
+
 // Display card
 function closeCard(element) {
   const card = jQuery(element).data('card');

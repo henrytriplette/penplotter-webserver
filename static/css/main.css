@@ -221,6 +221,9 @@ body {
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
   border-radius: 5px 5px 0 0;
 }
+.mac-card .uk-form-label {
+  color: #FFF;
+}
 
 .mac-browser-bar {
   background: #f9f9f3;
@@ -292,6 +295,11 @@ body {
 }
 .dropzone .dz-message {
   color: #FFF;
+}
+
+#statusLog {
+  font-size: 0.85rem;
+  line-height: 0.75rem;
 }
 
 footer {

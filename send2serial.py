@@ -205,6 +205,7 @@ def sendToPlotter(socketio, hpglfile, port = 'COM3', baud = 9600, plotter = '747
             percent = 100.0 * total_bytes_written/input_bytes
             print(f'{percent:.2f}%, {total_bytes_written} byte written.')
             socketio.emit('status_log', {'data': f'{percent:.2f}%, {total_bytes_written} byte written.'})
+            socketio.emit('print_progress', {'data': f'{percent:.2f}'})
 
         else:
             print(f'{percent:.2f}%, {bufsz_read} byte added.')
