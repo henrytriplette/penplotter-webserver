@@ -101,6 +101,18 @@ def plotter_cmd(tty, cmd, get_answer=False):
         e.add_cause(f'after sending {repr(cmd)[1:]}')
         raise e
 
+def baud_rate_test(serial_port, packet = b'IN;OI;'):
+    ser = serial.Serial(serial_port)
+    ser.timeout = 0.5
+    for baudrate in ser.BAUDRATES:
+        if 75 <= baudrate <= 19200:
+            ser.baudrate = baudrate
+            ser.write(packet)
+            resp = ser.readall()
+            if resp == packet:
+                return baudrate
+    return 'Unknown'
+
 def listComPorts():
     ports = dict(name='ports', content=[])
     for i in serial.tools.list_ports.comports():

@@ -7,4 +7,3 @@ mix.sass('sass/main.sass', 'css')
     processCssUrls: false,
   })
   .setPublicPath('static')
-  .browserSync('http://127.0.0.1:5000');

@@ -99,11 +99,12 @@ function startPlot() {
 
   // Validation
   if (jQuery('#fileName').val() == '') {
-    notify('No file selected', 'danger');
+    notify('No *.hpgl file selected', 'danger');
     return false
   }
-  if (jQuery('#portList').val() == '') {
-    notify('No port selected', 'danger');
+  if (jQuery('#portList').val() == null) {
+    notify('No COM port selected', 'danger');
+    updatePorts()
     return false
   }
 

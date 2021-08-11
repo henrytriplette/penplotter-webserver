@@ -134,19 +134,6 @@ body
   margin-left: 0
   transition: margin 0.2s cubic-bezier(0.4, 0, 0.2, 1)
 
-  .section::-webkit-scrollbar
-    width: 20px
-
-  .section::-webkit-scrollbar-track
-    background-color: #e4e4e4
-    border-radius: 100px
-
-  .section::-webkit-scrollbar-thumb
-    border-radius: 100px
-    border: 5px solid transparent
-    background-clip: content-box
-    background-color: #8070d4
-
 @media screen and (min-width: 960px)
   #content
     /* equal to left-col width
@@ -267,6 +254,15 @@ body
   background: #fff
   color: #333
   text-decoration: none
+
+.dropzone
+  min-height: 100%
+  border: 1px solid rgba(0,0,0,0.3)
+  background: #333
+  padding: 20px 20px
+
+  .dz-message
+    color: #FFF
 
 footer
   color: #fff
