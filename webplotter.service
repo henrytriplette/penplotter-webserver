@@ -3,10 +3,13 @@ Description=Pen plotter printer web service
 Wants=network-online.target
 After=network-online.target
 
-[Service]
-Type=PySimpleGUI
-ExecStart=python3 main.py
-WorkingDirectory=
-
 [Install]
 WantedBy=multi-user.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/webplotter
+ExecStart= /home/pi/webplotter/venv/bin/python3 /home/pi/webplotter/main.py
+TimeoutSec=600
+Restart=on-failure
+RuntimeDirectoryMode=755

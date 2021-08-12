@@ -29,7 +29,8 @@ def make_tree(path):
             if os.path.isdir(fn):
                 tree['content'].append(make_tree(fn))
             else:
-                tree['content'].append(dict(name=name))
+                if (name != '.gitignore'):
+                    tree['content'].append(dict(name=name))
     return tree
 
 def plot(file, port, baudrate = '9600', device = '7475a', poweroff = 'off'):
@@ -55,11 +56,14 @@ def plot(file, port, baudrate = '9600', device = '7475a', poweroff = 'off'):
 
 def convert(file, pagesize = 'a4', svgscale = 'a4', pageorientation = 'landscape'):
     if file:
-        outputFile = file[:-4] + '-Converted.hpgl'
+
+        filename, file_extension = os.path.splitext(file)
+
+        outputFile = filename + '_converted_' + pageorientation + '_' + svgscale + '_' + pagesize + '.hpgl'
 
         # Scale svg to desired paper size
         args = 'vpype';
-        args += ' read "' + str(file) + '"'; #Read input svg
+        args += ' read "' + os.getcwd() + '/' + str(file) + '"'; #Read input svg
 
         if (pageorientation == 'landscape'):
             if (svgscale == 'a3'):
@@ -80,9 +84,9 @@ def convert(file, pagesize = 'a4', svgscale = 'a4', pageorientation = 'landscape
             args += ' --landscape';
 
         args += ' --center';
-        args += ' "' + str(outputFile) + '"'
+        args += ' "' + os.getcwd() + '/' + str(outputFile) + '"'
 
-        rendering = subprocess.Popen(args)
+        rendering = subprocess.Popen(args, shell=True)
         rendering.wait() # Hold on till process is finished
 
         # Delete file
