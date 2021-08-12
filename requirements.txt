@@ -2,4 +2,5 @@ pyserial
 requests
 Flask
 Flask-SocketIO
+geos
 vpype
