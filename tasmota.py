@@ -7,8 +7,12 @@ from flask_socketio import SocketIO, emit
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-TASMOTA_ENABLE = config['tasmota']['enable']
-TASMOTA_IP = config['tasmota']['ip']
+TASMOTA_ENABLE = False
+if (config.has_option('tasmota', 'enable')):
+    TASMOTA_ENABLE = config['tasmota']['enable']
+TASMOTA_IP = False
+if (config.has_option('tasmota', 'ip')):
+    TASMOTA_IP = config['tasmota']['ip']
 
 def tasmota_setStatus(socketio, status):
     if TASMOTA_ENABLE == 'true':

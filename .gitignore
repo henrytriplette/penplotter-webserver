@@ -1,6 +1,5 @@
 venv/*
 __pycache__/*
-uploads/*
 node_modules/*
 config.ini
 test/*
