@@ -9,7 +9,8 @@ cd webplotter
 git clone https://github.com/henrytriplette/penplotter-webserver .
 # python3 -m venv venv
 # source venv/bin/activate
-pip3 install -r requirements.txt
+sudo pip3 install -r requirements.txt
+sudo cp config.ini.sample config.ini
 sudo cp webplotter.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable webplotter
