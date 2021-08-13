@@ -1,7 +1,15 @@
-- File Upload
-  - Also file management? Add, Delete, Rename
-- File Conversion
-- Print interface
-  - Setting print params
-  - List com ports
-  - Set file
+- [x] File Upload
+  - [x] Also file management? Add, Delete
+- [x] File Conversion
+- [x] Print interface
+  - [x] Setting print params
+  - [x] List com ports
+  - [x] Set file
+- [x] Fix vpype conversion isse when running as a service
+
+- [ ] List current printing filename
+- [ ] Stop print via UI?
+- [ ] Update config.ini via web interface
+- [ ] Autoscroll console
+- [ ] Disable file deletion while printing
+- [ ] Add tasmota control in sidebar
