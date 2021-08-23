@@ -183,6 +183,33 @@ def start_conversion():
 
         return output
 
+# Start reboot sequence
+@app.route('/action_reboot', methods=['GET', 'POST'])
+def action_reboot():
+    if request.method == "POST":
+        rendering = subprocess.Popen('sudo reboot', shell=True)
+        rendering.wait() # Hold on till process is finished
+
+        return 'action_reboot started'
+
+
+# Start poweroff sequence
+@app.route('/action_poweroff', methods=['GET', 'POST'])
+def action_poweroff():
+    if request.method == "POST":
+        rendering = subprocess.Popen('sudo poweroff', shell=True)
+        rendering.wait() # Hold on till process is finished
+
+        return 'action_poweroff started'
+
+# Toggle tasmota switch
+@app.route('/action_tasmota', methods=['GET', 'POST'])
+def action_tasmota():
+    if request.method == "POST":
+        tasmota.tasmota_setToggle(socketio)
+
+        return 'action_tasmota started'
+
 # On connection
 @socketio.event
 def connection(message):

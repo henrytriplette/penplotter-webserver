@@ -45,7 +45,9 @@
         <div class="left-nav-wrap">
           <ul class="uk-nav uk-nav-default uk-nav-parent-icon" data-uk-nav>
             <li class="uk-nav-header">ACTIONS</li>
-            <!-- <li><a href="#"><span data-uk-icon="icon: comments" class="uk-margin-small-right"></span>Messages</a></li> -->
+            <li><a href="#" class="action-tasmota-toggle actionTasmota"><span data-uk-icon="icon: bolt" class="uk-margin-small-right"></span>Toggle Tasmota</a></li>
+            <li><a href="#" class="action-open-reboot" uk-toggle="target: #modal-reboot"><span data-uk-icon="icon: refresh" class="uk-margin-small-right"></span>Reboot Pi</a></li>
+            <li><a href="#" class="action-open-poweroff" uk-toggle="target: #modal-poweroff"><span data-uk-icon="icon: close" class="uk-margin-small-right"></span>Poweroff Pi</a></li>
           </ul>
           <div class="left-content-box uk-margin-top">
 
@@ -66,11 +68,11 @@
               <a href="#" class="uk-icon-link" data-uk-icon="icon: settings" title="Settings" data-uk-tooltip></a>
             </li>
             <li>
-              <a href="#" class="uk-icon-link" data-uk-icon="icon: social"  title="Social" data-uk-tooltip></a>
+              <a href="#" class="uk-icon-link action-open-reboot" uk-toggle="target: #modal-reboot" data-uk-tooltip="Reboot Pi" data-uk-icon="icon: refresh"></a>
             </li>
 
             <li>
-              <a href="#" class="uk-icon-link" data-uk-tooltip="Sign out" data-uk-icon="icon: sign-out"></a>
+              <a href="#" class="uk-icon-link action-open-poweroff" uk-toggle="target: #modal-poweroff" data-uk-tooltip="Poweroff Pi" data-uk-icon="icon: sign-out"></a>
             </li>
           </ul>
         </div>
@@ -292,6 +294,28 @@
       </div>
       <!-- File Conversion Modal -->
 
+      <!-- This is the modal -->
+      <div id="modal-poweroff" uk-modal>
+          <div class="uk-modal-dialog uk-modal-body">
+              <h2 class="uk-modal-title">Poweroff Pi?</h2>
+              <p class="uk-text-right">
+                  <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                  <button class="uk-button uk-button-primary actionPoweroff" type="button">Poweroff</button>
+              </p>
+          </div>
+      </div>
+
+      <!-- This is the modal -->
+      <div id="modal-reboot" uk-modal>
+          <div class="uk-modal-dialog uk-modal-body">
+              <h2 class="uk-modal-title">Reboot Pi?</h2>
+              <p class="uk-text-right">
+                  <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                  <button class="uk-button uk-button-primary actionReboot" type="button">Reboot</button>
+              </p>
+          </div>
+      </div>
+
       <!-- UIkit JS -->
       <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/js/uikit.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/js/uikit-icons.min.js"></script>
@@ -339,9 +363,9 @@
           socket.on('lock_edit', function(msg, cb) {
             console.log('lock_edit', msg.data);
             if (msg.data == 'on') {
-              jQuery('.lock-edit').prop('disabled', true);
+              jQuery('.lock-edit').prop('disabled', true).addClass('uk-hidden');
             } else {
-              jQuery('.lock-edit').prop('disabled', false);
+              jQuery('.lock-edit').prop('disabled', false).removeClass('uk-hidden');
             }
           });
 
@@ -412,6 +436,23 @@
           jQuery(".showCard").click(function(e) {
             e.preventDefault();
             showCard(jQuery(this));
+          });
+
+          // Reboot Pi
+          jQuery(".actionReboot").click(function(e) {
+            e.preventDefault();
+            actionReboot();
+          });
+
+          // Poweroff Pi
+          jQuery(".actionPoweroff").click(function(e) {
+            e.preventDefault();
+            actionPoweroff();
+          });
+
+          jQuery(".actionTasmota").click(function(e) {
+            e.preventDefault();
+            actionTasmota();
           });
         })
       </script>

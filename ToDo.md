@@ -7,10 +7,10 @@
   - [x] Set file
 - [x] Fix vpype conversion isse when running as a service
 - [x] Autoscroll console
+- [x] Remote pi shutdown
+- [x] Add tasmota control in sidebar
 
+- [ ] Disable file deletion while printing
 - [ ] List current printing filename
 - [ ] Stop print via UI?
 - [ ] Update config.ini via web interface
-- [ ] Disable file deletion while printing
-- [ ] Add tasmota control in sidebar
-- [ ] Remote pi shutdown

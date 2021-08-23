@@ -152,3 +152,49 @@ function startPlot() {
       console.error(error);
     });
 }
+
+// Reboot Pi
+function actionReboot() {
+
+  axios.post('/action_reboot')
+    .then(function(response) {
+      // handle success
+      if (response.status == 200) {
+        UIkit.modal('#modal-reboot').hide();
+        notify('Rebooting now', 'warning');
+      }
+    })
+    .catch(function(error) {
+      console.error(error);
+    });
+}
+
+// Poweroff Pi
+function actionPoweroff() {
+
+  axios.post('/action_poweroff')
+    .then(function(response) {
+      // handle success
+      if (response.status == 200) {
+        UIkit.modal('#modal-poweroff').hide();
+        notify('Poweroff now', 'danger');
+      }
+    })
+    .catch(function(error) {
+      console.error(error);
+    });
+}
+
+function actionTasmota() {
+
+  axios.post('/action_tasmota')
+    .then(function(response) {
+      // handle success
+      if (response.status == 200) {
+        notify('Tasmota Toggled', 'success');
+      }
+    })
+    .catch(function(error) {
+      console.error(error);
+    });
+}
