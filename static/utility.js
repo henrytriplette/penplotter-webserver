@@ -15,7 +15,7 @@ function renderFileListElement(name) {
                   </a>
                 </div>
                 <div class="uk-width-auto uk-text-right panel-icons">
-                  <a href="#" class="uk-icon-link deleteFile" data-filename="${name}" title="Delete" data-uk-tooltip data-uk-icon="icon: close"></a>
+                  <a href="#" class="uk-icon-link deleteFile lock-edit" data-filename="${name}" title="Delete" data-uk-tooltip data-uk-icon="icon: close"></a>
                 </div>
               </div>`;
         break;
@@ -27,8 +27,8 @@ function renderFileListElement(name) {
                   </a>
                 </div>
                 <div class="uk-width-auto uk-text-right panel-icons">
-                  <a href="#" class="uk-icon-link convertFile" data-filename="${name}" title="Convert to HPGL" data-uk-tooltip data-uk-icon="icon: bolt"></a>
-                  <a href="#" class="uk-icon-link deleteFile" data-filename="${name}" title="Delete" data-uk-tooltip data-uk-icon="icon: close"></a>
+                  <a href="#" class="uk-icon-link convertFile lock-edit" data-filename="${name}" title="Convert to HPGL" data-uk-tooltip data-uk-icon="icon: bolt"></a>
+                  <a href="#" class="uk-icon-link deleteFile lock-edit" data-filename="${name}" title="Delete" data-uk-tooltip data-uk-icon="icon: close"></a>
                 </div>
               </div>`;
         break;
@@ -40,7 +40,7 @@ function renderFileListElement(name) {
                   </a>
                 </div>
                 <div class="uk-width-auto uk-text-right panel-icons">
-                  <a href="#" class="uk-icon-link deleteFile" data-filename="${name}" title="Delete" data-uk-tooltip data-uk-icon="icon: close"></a>
+                  <a href="#" class="uk-icon-link deleteFile lock-edit" data-filename="${name}" title="Delete" data-uk-tooltip data-uk-icon="icon: close"></a>
                 </div>
               </div>`;
   }
@@ -55,5 +55,13 @@ function notify(message, status) {
       status: status,
       pos: 'top-right',
       timeout: 5000
+  });
+}
+
+function scrollLog() {
+  jQuery('.auto-scroll').each(function( index ) {
+    jQuery(this).animate({
+      scrollTop: jQuery(this)[0].scrollHeight
+    }, "slow");
   });
 }

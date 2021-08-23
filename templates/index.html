@@ -191,7 +191,7 @@
                         </fieldset>
                     </form>
 
-                    <a href="#" class="startPlot uk-button uk-button-primary uk-width-1-1 uk-margin-top">Start Plot</a>
+                    <a href="#" class="startPlot uk-button uk-button-primary uk-width-1-1 uk-margin-top lock-edit">Start Plot</a>
                   </div>
                 </div>
               </div>
@@ -213,7 +213,7 @@
                   </div>
                 </div>
                 <div id="statusLog-card" class="uk-card-body">
-                  <div class="chart-container uk-panel uk-panel-scrollable">
+                  <div class="chart-container uk-panel uk-panel-scrollable auto-scroll">
                     <code id="statusLog"></code>
                   </div>
                 </div>
@@ -285,7 +285,7 @@
               </form>
 
               <div class="uk-text-right uk-margin-small-top">
-                  <button class="uk-button uk-button-primary startConversion" type="button">Convert</button>
+                  <button class="uk-button uk-button-primary startConversion lock-edit" type="button">Convert</button>
               </div>
             </div>
           </div>
@@ -321,15 +321,28 @@
 
           // Set log window
           socket.on('status_log', function(msg, cb) {
-              $('#statusLog').append('<br>' + $('<div/>').text(msg.data).html());
+              jQuery('#statusLog').append('<br>' + $('<div/>').text(msg.data).html());
+              scrollLog();
           });
 
           socket.on('error', function(msg, cb) {
-              $('#statusLog').append('<br>' + $('<div class="error"/>').text(msg.data).html());
+              jQuery('#statusLog').append('<br>' + $('<div class="error"/>').text(msg.data).html());
+              scrollLog()
           });
 
+          // Display print progression
           socket.on('print_progress', function(msg, cb) {
-              $('#printProgress').val(msg.data);
+              jQuery('#printProgress').val(msg.data);
+          });
+
+          // Lock file deletion on print start, unlock on stop
+          socket.on('lock_edit', function(msg, cb) {
+            console.log('lock_edit', msg.data);
+            if (msg.data == 'on') {
+              jQuery('.lock-edit').prop('disabled', true);
+            } else {
+              jQuery('.lock-edit').prop('disabled', false);
+            }
           });
 
           // Populate list on first start

@@ -6,10 +6,11 @@
   - [x] List com ports
   - [x] Set file
 - [x] Fix vpype conversion isse when running as a service
+- [x] Autoscroll console
 
 - [ ] List current printing filename
 - [ ] Stop print via UI?
 - [ ] Update config.ini via web interface
-- [ ] Autoscroll console
 - [ ] Disable file deletion while printing
 - [ ] Add tasmota control in sidebar
+- [ ] Remote pi shutdown

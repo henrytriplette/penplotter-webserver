@@ -37,6 +37,9 @@ def plot(file, port, baudrate = '9600', device = '7475a', poweroff = 'off'):
     if file:
         if os.path.exists(file):
 
+            # Lock editing while printing
+            socketio.emit('lock_edit', {'data': 'on'})
+
             # Tasmota - check for on
             if poweroff == 'on':
                 tasmota.tasmota_setStatus(socketio, 'on')
@@ -49,6 +52,8 @@ def plot(file, port, baudrate = '9600', device = '7475a', poweroff = 'off'):
             if poweroff == 'on':
                 tasmota.tasmota_setStatus(socketio, 'off')
 
+            # Lock editing while printing
+            socketio.emit('lock_edit', {'data': 'off'})
         else:
             return socketio.emit('error', {'data': 'Please select a valid .hpgl file'})
     else:
