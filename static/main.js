@@ -48,6 +48,9 @@ function selectFile(element) {
   jQuery('#fileList li').removeClass('uk-alert-primary');
   const li = jQuery(element).parents('li')[0]
   if (li) jQuery(li).addClass('uk-alert-primary');
+
+  // Update sidebar
+  jQuery('#selectedFilename').html(filename);
 }
 
 // Handle file deletion
@@ -151,6 +154,22 @@ function startPlot() {
     .catch(function(error) {
       console.error(error);
     });
+}
+
+function stopPlot() {
+
+  axios.get('/stop_plot')
+    .then(function(response) {
+      // handle success
+      if (response.status == 200) {
+        console.log(response);
+        notify('Stopped Print', 'danger');
+      }
+    })
+    .catch(function(error) {
+      console.error(error);
+    });
+
 }
 
 // Reboot Pi

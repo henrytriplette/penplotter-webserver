@@ -53,9 +53,16 @@
 
               <h5>Reports</h5>
               <div>
-                <span class="uk-text-small">Printing Progress</span>
+                <span class="uk-text-small">Printing Report</span>
                 <progress id="printProgress" class="uk-progress" value="0" max="100"></progress>
+                <span class="uk-text-small uk-text-muted">Selected File: <span id="selectedFilename" class="uk-text-success"></span></span>
               </div>
+
+              <ul class="uk-nav uk-nav-default uk-nav-parent-icon unlock-edit uk-hidden" data-uk-nav>
+                <li><a href="#" class="uk-button-danger stopPlot"><span data-uk-icon="icon: close" class="uk-margin-small-right"></span>Stop Print</a></li>
+              </ul>
+
+
           </div>
 
         </div>
@@ -423,8 +430,10 @@
             console.log('lock_edit', msg.data);
             if (msg.data == 'on') {
               jQuery('.lock-edit').prop('disabled', true).addClass('uk-hidden');
+              jQuery('.unlock-edit').prop('disabled', false).removeClass('uk-hidden');
             } else {
               jQuery('.lock-edit').prop('disabled', false).removeClass('uk-hidden');
+              jQuery('.unlock-edit').prop('disabled', true).addClass('uk-hidden');
             }
           });
 
@@ -484,6 +493,13 @@
             e.preventDefault();
             startPlot();
           });
+
+          // Stop Plot
+          jQuery(".stopPlot").click(function(e) {
+            e.preventDefault();
+            stopPlot();
+          });
+
 
           // Show Cards
           jQuery(".closeCard").click(function(e) {

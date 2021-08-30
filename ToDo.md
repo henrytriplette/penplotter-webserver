@@ -12,5 +12,5 @@
 - [x] Update config.ini via web interface
 - [x] Disable file deletion while printing
 
-- [ ] List current printing filename
 - [ ] Stop print via UI?
+- [ ] List current printing filename

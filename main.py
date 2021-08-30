@@ -7,6 +7,7 @@ from flask import Flask, render_template, request, redirect, url_for, abort, sen
 from werkzeug.utils import secure_filename
 from flask_socketio import SocketIO, emit
 
+import globals
 import send2serial
 import tasmota
 
@@ -175,6 +176,13 @@ def start_plot():
 
         return 'Plotter Started'
 
+# Stop the printing process
+@app.route('/stop_plot', methods=['GET', 'POST'])
+def stop_plot():
+    if request.method == "GET":
+        globals.printing = False
+        return 'Plotter Stopped'
+
 # Start converting file using vpype
 @app.route('/start_conversion', methods=['GET', 'POST'])
 def start_conversion():
@@ -238,11 +246,16 @@ def save_configfile():
             'tasmota_ip': config['tasmota']['tasmota_ip']
         }
         return output
+
 # On connection
 @socketio.event
 def connection(message):
     print('Client connected')
 
 if __name__ == "__main__":
+
+    # Globals variables
+    globals.initialize()
+
     # app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
