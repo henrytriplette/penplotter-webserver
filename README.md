@@ -40,8 +40,8 @@ http://{{your Raspberry Pi address}}:5000
 - [x] Update config.ini via web interface
 - [x] Disable file deletion while printing
 
-- [ ] List current printing filename
 - [ ] Stop print via UI?
+- [ ] List current printing filename
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
