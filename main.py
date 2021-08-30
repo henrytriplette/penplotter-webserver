@@ -1,6 +1,7 @@
 import os
 import time
 import subprocess
+import configparser
 
 from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
@@ -8,6 +9,10 @@ from flask_socketio import SocketIO, emit
 
 import send2serial
 import tasmota
+
+# Read Configuration
+config = configparser.ConfigParser()
+config.read('config.ini')
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
@@ -210,6 +215,29 @@ def action_tasmota():
 
         return 'action_tasmota started'
 
+# Update configfile values
+@app.route('/save_configfile', methods=['GET', 'POST'])
+def save_configfile():
+    if request.method == "POST":
+        config['telegram']['telegram_token'] = request.form.get('telegram_token')
+        config['telegram']['telegram_chatid'] = request.form.get('telegram_chatid')
+        config['tasmota']['tasmota_enable'] = request.form.get('tasmota_enable')
+        config['tasmota']['tasmota_ip'] = request.form.get('tasmota_ip')
+
+        with open('config.ini', 'w') as configfile:
+            config.write(configfile)
+
+        output = 'Configuration Updated'
+        return output
+    elif request.method == "GET":
+
+        output = {
+            'telegram_token': config['telegram']['telegram_token'],
+            'telegram_chatid': config['telegram']['telegram_chatid'],
+            'tasmota_enable': config['tasmota']['tasmota_enable'],
+            'tasmota_ip': config['tasmota']['tasmota_ip']
+        }
+        return output
 # On connection
 @socketio.event
 def connection(message):

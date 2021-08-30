@@ -198,3 +198,40 @@ function actionTasmota() {
       console.error(error);
     });
 }
+
+// Fetch config.ini data and display modal
+function actionOpenConfig() {
+  axios.get('/save_configfile')
+    .then(function(response) {
+      // handle success
+      if (response.status == 200) {
+
+        jQuery('#telegram_token').val(response.data.telegram_token);
+        jQuery('#telegram_chatid').val(response.data.telegram_chatid);
+        jQuery('#tasmota_enable').val(response.data.tasmota_enable);
+        jQuery('#tasmota_ip').val(response.data.tasmota_ip);
+        UIkit.modal('#modal-configFile').show();
+      }
+    })
+    .catch(function(error) {
+      console.error(error);
+    });
+}
+
+// Save new values in config.ini
+function saveConfig() {
+  const configData = jQuery('#configData').serializeArray()
+  console.log('configData', configData);
+
+  axios.post('/save_configfile', jQuery('#configData').serialize())
+    .then(function(response) {
+      console.log(response);
+      // handle success
+      if (response.status == 200) {
+        notify(response.data, 'success')
+      }
+    })
+    .catch(function(error) {
+      console.error(error);
+    });
+}

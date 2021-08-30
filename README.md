@@ -34,14 +34,14 @@ http://{{your Raspberry Pi address}}:5000
 
 ## ToDO
 
-- [x] Add tasmota control in sidebar
-- [x] Remote pi shutdown
 - [x] Autoscroll console
+- [x] Remote pi shutdown
+- [x] Add tasmota control in sidebar
+- [x] Update config.ini via web interface
+- [x] Disable file deletion while printing
 
 - [ ] List current printing filename
 - [ ] Stop print via UI?
-- [ ] Update config.ini via web interface
-- [ ] Disable file deletion while printing
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

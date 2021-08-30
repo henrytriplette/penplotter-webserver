@@ -9,8 +9,8 @@
 - [x] Autoscroll console
 - [x] Remote pi shutdown
 - [x] Add tasmota control in sidebar
+- [x] Update config.ini via web interface
+- [x] Disable file deletion while printing
 
-- [ ] Disable file deletion while printing
 - [ ] List current printing filename
 - [ ] Stop print via UI?
-- [ ] Update config.ini via web interface

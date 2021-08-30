@@ -65,7 +65,7 @@
               <a href="#" class="uk-icon-link" data-uk-icon="icon: home" title="Home" data-uk-tooltip></a>
             </li>
             <li>
-              <a href="#" class="uk-icon-link" data-uk-icon="icon: settings" title="Settings" data-uk-tooltip></a>
+              <a href="#" class="uk-icon-link actionOpenConfig" data-uk-tooltip="Set Config File" data-uk-icon="icon: settings" title="Edit Config File" data-uk-tooltip></a>
             </li>
             <li>
               <a href="#" class="uk-icon-link action-open-reboot" uk-toggle="target: #modal-reboot" data-uk-tooltip="Reboot Pi" data-uk-icon="icon: refresh"></a>
@@ -294,7 +294,64 @@
       </div>
       <!-- File Conversion Modal -->
 
-      <!-- This is the modal -->
+      <!-- config modal -->
+      <div id="modal-configFile" uk-modal>
+          <div class="uk-modal-dialog uk-card uk-card-default uk-card-small mac-card">
+            <div class="uk-card-header mac-browser-bar">
+              <div class="uk-grid uk-grid-small">
+                <div class="uk-width-auto"><h4>Edit Config File</h4></div>
+                <div class="uk-width-expand uk-text-right panel-icons">
+                  <a href="#" class="uk-icon-link mac-button mac-close uk-modal-close" title="Close" data-uk-tooltip data-uk-icon="icon: close"></a>
+                </div>
+              </div>
+            </div>
+            <div class="uk-modal-body">
+              <form id="configData">
+                  <fieldset class="uk-fieldset uk-grid-small" uk-grid>
+
+                    <div class="uk-width-1-2@s">
+                      <label class="uk-form-label" for="telegram_token">Telegram Token</label>
+                      <div class="uk-margin-small">
+                          <input id="telegram_token" class="uk-input" name="telegram_token" type="input">
+                      </div>
+                    </div>
+
+                    <div class="uk-width-1-2@s">
+                      <label class="uk-form-label" for="telegram_chatid">Telegram Chat ID</label>
+                      <div class="uk-margin-small">
+                          <input id="telegram_chatid" class="uk-input" name="telegram_chatid" type="input">
+                      </div>
+                    </div>
+
+                    <div class="uk-width-1-2@s">
+                      <label class="uk-form-label" for="tasmota_enable">Enable Tasmota</label>
+                      <div class="uk-margin-small">
+                        <select id="tasmota_enable" class="uk-select" name="tasmota_enable">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="uk-width-1-2@s">
+                      <label class="uk-form-label" for="tasmota_ip">Tasmota Ip</label>
+                      <div class="uk-margin-small">
+                          <input id="tasmota_ip" class="uk-input" name="tasmota_ip" type="input">
+                      </div>
+                    </div>
+
+                  </fieldset>
+              </form>
+
+              <div class="uk-text-right uk-margin-small-top">
+                  <button class="uk-button uk-button-primary saveConfig" type="button">Save Configuration</button>
+              </div>
+            </div>
+          </div>
+      </div>
+      <!-- config modal -->
+
+      <!-- poweroff modal -->
       <div id="modal-poweroff" uk-modal>
           <div class="uk-modal-dialog uk-modal-body">
               <h2 class="uk-modal-title">Poweroff Pi?</h2>
@@ -304,8 +361,9 @@
               </p>
           </div>
       </div>
+      <!-- poweroff modal -->
 
-      <!-- This is the modal -->
+      <!-- reboot modal -->
       <div id="modal-reboot" uk-modal>
           <div class="uk-modal-dialog uk-modal-body">
               <h2 class="uk-modal-title">Reboot Pi?</h2>
@@ -315,6 +373,7 @@
               </p>
           </div>
       </div>
+      <!-- reboot modal -->
 
       <!-- UIkit JS -->
       <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/js/uikit.min.js"></script>
@@ -450,10 +509,24 @@
             actionPoweroff();
           });
 
+          // Toggle Tasmota device
           jQuery(".actionTasmota").click(function(e) {
             e.preventDefault();
             actionTasmota();
           });
+
+          // Open Config.ini file editor
+          jQuery(".actionOpenConfig").click(function(e) {
+            e.preventDefault();
+            actionOpenConfig();
+          });
+
+          // Save new data into Config.ini
+          jQuery(".saveConfig").click(function(e) {
+            e.preventDefault();
+            saveConfig();
+          });
+
         })
       </script>
     </body>

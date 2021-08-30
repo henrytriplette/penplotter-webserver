@@ -8,11 +8,11 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 TASMOTA_ENABLE = False
-if (config.has_option('tasmota', 'enable')):
-    TASMOTA_ENABLE = config['tasmota']['enable']
+if (config.has_option('tasmota', 'tasmota_enable')):
+    TASMOTA_ENABLE = config['tasmota']['tasmota_ip']
 TASMOTA_IP = False
-if (config.has_option('tasmota', 'ip')):
-    TASMOTA_IP = config['tasmota']['ip']
+if (config.has_option('tasmota', 'tasmota_enable')):
+    TASMOTA_IP = config['tasmota']['tasmota_ip']
 
 def tasmota_setStatus(socketio, status):
     if TASMOTA_ENABLE == 'true':
