@@ -164,6 +164,9 @@ function stopPlot() {
       if (response.status == 200) {
         console.log(response);
         notify('Stopped Print', 'danger');
+
+        // Update sidebar
+        jQuery('#selectedFilename').html("");
       }
     })
     .catch(function(error) {
