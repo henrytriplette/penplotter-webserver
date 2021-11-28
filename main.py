@@ -3,7 +3,7 @@ import time
 import subprocess
 import configparser
 
-from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory, jsonify
+from flask import Flask, Response, render_template, request, redirect, url_for, abort, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
 from flask_socketio import SocketIO, emit
 
@@ -116,7 +116,19 @@ def too_large(e):
 @app.route('/')
 def index():
     files = make_tree(app.config['UPLOAD_PATH'])
-    return render_template('index.html', files=files)
+
+    configuration = {
+        'telegram_token': config['telegram']['telegram_token'],
+        'telegram_chatid': config['telegram']['telegram_chatid'],
+        'tasmota_enable': config['tasmota']['tasmota_enable'],
+        'tasmota_ip': config['tasmota']['tasmota_ip'],
+        'plotter_name': config['plotter']['name'],
+        'plotter_port': config['plotter']['port'],
+        'plotter_device': config['plotter']['device'],
+        'plotter_baudrate': config['plotter']['baudrate'],
+    }
+
+    return render_template('index.html', files=files, configuration=configuration)
 
 # Upload
 @app.route('/', methods=['POST'])
@@ -200,20 +212,27 @@ def start_conversion():
 @app.route('/action_reboot', methods=['GET', 'POST'])
 def action_reboot():
     if request.method == "POST":
-        rendering = subprocess.Popen('sudo reboot', shell=True)
-        rendering.wait() # Hold on till process is finished
+        response = Response('action_reboot started')
 
-        return 'action_reboot started'
+        @response.call_on_close
+        def on_close():
+            rendering = subprocess.Popen('sudo reboot', shell=True)
+            rendering.wait() # Hold on till process is finished
 
+        return response
 
 # Start poweroff sequence
 @app.route('/action_poweroff', methods=['GET', 'POST'])
 def action_poweroff():
     if request.method == "POST":
-        rendering = subprocess.Popen('sudo poweroff', shell=True)
-        rendering.wait() # Hold on till process is finished
+        response = Response('action_poweroff started')
 
-        return 'action_poweroff started'
+        @response.call_on_close
+        def on_close():
+            rendering = subprocess.Popen('sudo poweroff', shell=True)
+            rendering.wait() # Hold on till process is finished
+
+        return response
 
 # Toggle tasmota switch
 @app.route('/action_tasmota', methods=['GET', 'POST'])
@@ -227,10 +246,24 @@ def action_tasmota():
 @app.route('/save_configfile', methods=['GET', 'POST'])
 def save_configfile():
     if request.method == "POST":
-        config['telegram']['telegram_token'] = request.form.get('telegram_token')
-        config['telegram']['telegram_chatid'] = request.form.get('telegram_chatid')
-        config['tasmota']['tasmota_enable'] = request.form.get('tasmota_enable')
-        config['tasmota']['tasmota_ip'] = request.form.get('tasmota_ip')
+        if "telegram_token" in request.form:
+            config['telegram']['telegram_token'] = request.form.get('telegram_token')
+        if "telegram_chatid" in request.form:
+            config['telegram']['telegram_chatid'] = request.form.get('telegram_chatid')
+
+        if "tasmota_enable" in request.form:
+            config['tasmota']['tasmota_enable'] = request.form.get('tasmota_enable')
+        if "tasmota_ip" in request.form:
+            config['tasmota']['tasmota_ip'] = request.form.get('tasmota_ip')
+
+        if "plotter_name" in request.form:
+            config['plotter']['name'] = request.form.get('plotter_name')
+        if "plotter_port" in request.form:
+            config['plotter']['port'] = request.form.get('plotter_port')
+        if "plotter_device" in request.form:
+            config['plotter']['device'] = request.form.get('plotter_device')
+        if "plotter_baudrate" in request.form:
+            config['plotter']['baudrate'] = request.form.get('plotter_baudrate')
 
         with open('config.ini', 'w') as configfile:
             config.write(configfile)
@@ -243,7 +276,11 @@ def save_configfile():
             'telegram_token': config['telegram']['telegram_token'],
             'telegram_chatid': config['telegram']['telegram_chatid'],
             'tasmota_enable': config['tasmota']['tasmota_enable'],
-            'tasmota_ip': config['tasmota']['tasmota_ip']
+            'tasmota_ip': config['tasmota']['tasmota_ip'],
+            'plotter_name': config['plotter']['name'],
+            'plotter_port': config['plotter']['port'],
+            'plotter_device': config['plotter']['device'],
+            'plotter_baudrate': config['plotter']['baudrate'],
         }
         return output
 

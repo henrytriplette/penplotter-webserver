@@ -21,10 +21,22 @@
               <div class="uk-navbar-item uk-hidden@m">
                 <a class="uk-logo" href="#"><img class="custom-logo" src="{{url_for('static', filename='img/logo.png')}}" alt=""></a>
               </div>
+              <ul class="uk-navbar-nav uk-visible@m">
+                <li><a href="#"><span class="plotter_name">Default Plotter</span></a></li>
+              </ul>
             </div>
             <div class="uk-navbar-right">
-              <ul class="uk-navbar-nav">
-                <!-- <li><a class="uk-navbar-toggle" data-uk-toggle data-uk-navbar-toggle-icon href="#offcanvas-nav" title="Offcanvas" data-uk-tooltip></a></li> -->
+              <ul class="uk-navbar-nav uk-hidden@m">
+                <!-- <li>
+                  <a href="#" class="uk-icon-link actionOpenConfig" data-uk-tooltip="Set Config File" data-uk-icon="icon: settings" title="Edit Config File" data-uk-tooltip></a>
+                </li>
+                <li>
+                  <a href="#" class="uk-icon-link action-open-reboot" uk-toggle="target: #modal-reboot" data-uk-tooltip="Reboot Pi" data-uk-icon="icon: refresh"></a>
+                </li>
+                <li>
+                  <a href="#" class="uk-icon-link action-open-poweroff" uk-toggle="target: #modal-poweroff" data-uk-tooltip="Poweroff Pi" data-uk-icon="icon: sign-out"></a>
+                </li> -->
+                <li><a class="uk-navbar-toggle" data-uk-toggle data-uk-navbar-toggle-icon href="#offcanvas-nav" title="Offcanvas" data-uk-tooltip></a></li>
               </ul>
             </div>
           </nav>
@@ -54,8 +66,8 @@
               <h5>Reports</h5>
               <div>
                 <span class="uk-text-small">Printing Report</span>
-                <progress id="printProgress" class="uk-progress" value="0" max="100"></progress>
-                <span class="uk-text-small uk-text-muted">Selected File: <span id="selectedFilename" class="uk-text-success"></span></span>
+                <progress id="printProgress" class="uk-progress printProgress" value="0" max="100"></progress>
+                <span class="uk-text-small uk-text-muted">Selected File: <span id="selectedFilename" class="uk-text-success selectedFilename"></span></span>
               </div>
 
               <ul class="uk-nav uk-nav-default uk-nav-parent-icon unlock-edit uk-hidden" data-uk-nav>
@@ -164,7 +176,7 @@
                               <div class="uk-margin-small">
                                 <div class="uk-grid uk-grid-small">
                                   <div class="uk-width-expand">
-                                    <select id="portList" class="uk-select" name="port">
+                                    <select id="portList" class="uk-select portList" name="port">
                                     </select>
                                   </div>
                                   <div class="uk-width-auto uk-text-right panel-icons">
@@ -190,7 +202,7 @@
                             <div class="uk-width-1-2@s">
                               <label class="uk-form-label" for="form-stacked-text">Plotting Device</label>
                               <div class="uk-margin-small">
-                                  <select input="device" class="uk-select" name="device">
+                                  <select id="device" input="device" class="uk-select" name="device">
                                       <option value="7475a">HP 7475A</option>
                                       <option value="mp4200">Graptech MP4200</option>
                                   </select>
@@ -238,6 +250,33 @@
         </div>
       </div>
       <!-- /CONTENT -->
+
+      <!-- OFFCANVAS -->
+      <div id="offcanvas-nav" data-uk-offcanvas="flip: true; overlay: true">
+        <div class="uk-offcanvas-bar uk-offcanvas-bar-animation uk-offcanvas-slide">
+          <button class="uk-offcanvas-close uk-close uk-icon" type="button" data-uk-close></button>
+          <ul class="uk-nav uk-nav-default uk-nav-parent-icon" data-uk-nav>
+            <li class="uk-nav-header">ACTIONS</li>
+            <li><a href="#" class="action-tasmota-toggle actionTasmota"><span data-uk-icon="icon: bolt" class="uk-margin-small-right"></span>Toggle Tasmota</a></li>
+            <li><a href="#" class="action-open-reboot" uk-toggle="target: #modal-reboot"><span data-uk-icon="icon: refresh" class="uk-margin-small-right"></span>Reboot Pi</a></li>
+            <li><a href="#" class="action-open-poweroff" uk-toggle="target: #modal-poweroff"><span data-uk-icon="icon: close" class="uk-margin-small-right"></span>Poweroff Pi</a></li>
+            <li><a href="#" class="actionOpenConfig"><span data-uk-icon="icon: settings" class="uk-margin-small-right"></span>Edit Config File</a>
+          </ul>
+          <div class="left-content-box uk-margin-top">
+              <h5>Reports</h5>
+              <div>
+                <span class="uk-text-small">Printing Report</span>
+                <progress id="printProgressOffCanvas" class="uk-progress printProgress" value="0" max="100"></progress>
+                <span class="uk-text-small uk-text-muted">Selected File: <span id="selectedFilenameOffCanvas" class="uk-text-success selectedFilename"></span></span>
+              </div>
+              <ul class="uk-nav uk-nav-default uk-nav-parent-icon unlock-edit uk-hidden" data-uk-nav>
+                <li><a href="#" class="uk-button-danger stopPlot"><span data-uk-icon="icon: close" class="uk-margin-small-right"></span>Stop Print</a></li>
+              </ul>
+          </div>
+
+        </div>
+      </div>
+      <!-- /OFFCANVAS -->
 
       <!-- File Conversion Modal -->
       <div id="modal-convertFile" uk-modal>
@@ -347,6 +386,37 @@
                       </div>
                     </div>
 
+                    <div class="uk-width-1-2@s">
+                      <label class="uk-form-label" for="plotter_name">Plotter Name</label>
+                      <div class="uk-margin-small">
+                          <input id="plotter_name" class="uk-input" name="plotter_name" type="input">
+                      </div>
+                    </div>
+                    <div class="uk-width-1-2@s">
+                      <label class="uk-form-label" for="plotter_port">Plotter Default Port</label>
+                      <div class="uk-margin-small">
+                          <select id="plotter_port" class="uk-select portList" name="plotter_port">
+                          </select>
+                      </div>
+                    </div>
+                    <div class="uk-width-1-2@s">
+                      <label class="uk-form-label" for="plotter_device">Plotter Default Device</label>
+                      <div class="uk-margin-small">
+                          <select id="plotter_device" input="device" class="uk-select" name="plotter_device">
+                              <option value="7475a">HP 7475A</option>
+                              <option value="mp4200">Graptech MP4200</option>
+                          </select>
+                      </div>
+                    </div>
+                    <div class="uk-width-1-2@s">
+                      <label class="uk-form-label" for="plotter_baudrate">Plotter Default Baudrate</label>
+                      <div class="uk-margin-small">
+                          <select id="plotter_baudrate" class="uk-select" name="plotter_baudrate">
+                              <option value="9600">9600</option>
+                          </select>
+                      </div>
+                    </div>
+
                   </fieldset>
               </form>
 
@@ -422,7 +492,7 @@
 
           // Display print progression
           socket.on('print_progress', function(msg, cb) {
-              jQuery('#printProgress').val(msg.data);
+              jQuery('.printProgress').val(msg.data);
           });
 
           // Lock file deletion on print start, unlock on stop
@@ -440,6 +510,9 @@
           // Populate list on first start
           updateFiles();
           updatePorts();
+
+          // Fetch configuration data
+          updateConfiguration();
 
           // Create uploader
           const uploadFiles = new Dropzone("#uploadFiles");
