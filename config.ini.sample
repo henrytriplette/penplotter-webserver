@@ -5,3 +5,9 @@ telegram_chatid = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 [tasmota]
 tasmota_enable = false
 tasmota_ip = 192.168.1.107
+
+[plotter]
+name = HP 7475A
+port = COM1
+device = 7475a
+baudrate = 9600

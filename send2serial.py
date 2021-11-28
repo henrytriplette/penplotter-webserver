@@ -12,6 +12,7 @@ from flask_socketio import SocketIO, emit
 
 # import PySimpleGUI as sg
 import notification
+import globals
 
 # answer to <ESC>.O Output Extended Status Information [Manual: 10-42]
 EXT_STATUS_BUF_EMPTY = 0x08  # buffer empty
@@ -32,7 +33,6 @@ ERRORS = {
     15: 'framing error, parity error or overrun',
     16: 'input buffer has overflowed'
 }
-
 
 class HPGLError(Exception):
     def __init__(self, n, cause=None):
@@ -121,7 +121,10 @@ def listComPorts():
 
 def sendToPlotter(socketio, hpglfile, port = 'COM3', baud = 9600, plotter = '7475a'):
     print(plotter)
+
+    globals.printing = True
     input_bytes = None
+
     try:
         ss = os.stat(hpglfile)
         if ss.st_size != 0:
@@ -178,7 +181,7 @@ def sendToPlotter(socketio, hpglfile, port = 'COM3', baud = 9600, plotter = '747
 
     total_bytes_written = 0
 
-    while True:
+    while globals.printing == True:
         status = plotter_cmd(tty, b'\033.O', True)
         if (status & (EXT_STATUS_VIEW | EXT_STATUS_LEVER)):
             print('*** Printer is viewing plot, pausing data.')

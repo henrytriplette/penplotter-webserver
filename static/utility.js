@@ -62,6 +62,6 @@ function scrollLog() {
   jQuery('.auto-scroll').each(function( index ) {
     jQuery(this).animate({
       scrollTop: jQuery(this)[0].scrollHeight
-    }, "slow");
+    }, 10);
   });
 }

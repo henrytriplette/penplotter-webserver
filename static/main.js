@@ -5,13 +5,14 @@ function updatePorts() {
       // handle success
       if (response.status == 200) {
         // Remove old content from list
-        jQuery('#portList').html('');
+        jQuery('.portList').html('');
         for (var content of response.data.content) {
-          jQuery('#portList').append(`<option value="${content}">${content}</option>`)
+          jQuery('.portList').append(`<option value="${content}">${content}</option>`)
         }
       }
     })
     .catch(function(error) {
+      notify(error, 'danger')
       console.error(error);
     })
     .then(function() {});
@@ -32,6 +33,7 @@ function updateFiles() {
       }
     })
     .catch(function(error) {
+      notify(error, 'danger')
       console.error(error);
     })
     .then(function() {});
@@ -48,6 +50,9 @@ function selectFile(element) {
   jQuery('#fileList li').removeClass('uk-alert-primary');
   const li = jQuery(element).parents('li')[0]
   if (li) jQuery(li).addClass('uk-alert-primary');
+
+  // Update sidebar
+  jQuery('.selectedFilename').html(filename);
 }
 
 // Handle file deletion
@@ -64,6 +69,7 @@ function deleteFile(element) {
       }
     })
     .catch(function(error) {
+      notify(error, 'danger')
       console.error(error);
     })
     .then(function() {});
@@ -98,6 +104,7 @@ function convertFile() {
       }
     })
     .catch(function(error) {
+      notify(error, 'danger')
       console.error(error);
     });
 }
@@ -149,8 +156,29 @@ function startPlot() {
       }
     })
     .catch(function(error) {
+      notify(error, 'danger')
       console.error(error);
     });
+}
+
+function stopPlot() {
+
+  axios.get('/stop_plot')
+    .then(function(response) {
+      // handle success
+      if (response.status == 200) {
+        console.log(response);
+        notify('Stopped Print', 'danger');
+
+        // Update sidebar
+        jQuery('.selectedFilename').html("");
+      }
+    })
+    .catch(function(error) {
+      notify(error, 'danger')
+      console.error(error);
+    });
+
 }
 
 // Reboot Pi
@@ -165,6 +193,7 @@ function actionReboot() {
       }
     })
     .catch(function(error) {
+      notify(error, 'danger')
       console.error(error);
     });
 }
@@ -181,6 +210,7 @@ function actionPoweroff() {
       }
     })
     .catch(function(error) {
+      notify(error, 'danger')
       console.error(error);
     });
 }
@@ -195,9 +225,35 @@ function actionTasmota() {
       }
     })
     .catch(function(error) {
+      notify(error, 'danger')
       console.error(error);
     });
 }
+
+// Fetch config.ini data and update UI
+function updateConfiguration() {
+  axios.get('/save_configfile')
+    .then(function(response) {
+      // handle success
+      if (response.status == 200) {
+
+        jQuery('#telegram_token').val(response.data.telegram_token);
+        jQuery('#telegram_chatid').val(response.data.telegram_chatid);
+        jQuery('#tasmota_enable').val(response.data.tasmota_enable);
+        jQuery('#tasmota_ip').val(response.data.tasmota_ip);
+
+        jQuery('.plotter_name').html(response.data.plotter_name);
+        jQuery('.portList').val(response.data.plotter_port).change();
+        jQuery('#device').val(response.data.plotter_device).change();
+        jQuery('#baudRate').val(response.data.plotter_baudrate).change();
+      }
+    })
+    .catch(function(error) {
+      notify(error, 'danger')
+      console.error(error);
+    });
+}
+
 
 // Fetch config.ini data and display modal
 function actionOpenConfig() {
@@ -210,10 +266,17 @@ function actionOpenConfig() {
         jQuery('#telegram_chatid').val(response.data.telegram_chatid);
         jQuery('#tasmota_enable').val(response.data.tasmota_enable);
         jQuery('#tasmota_ip').val(response.data.tasmota_ip);
+
+        jQuery('#plotter_name').val(response.data.plotter_name);
+        jQuery('#plotter_port').val(response.data.plotter_port).change();
+        jQuery('#plotter_device').val(response.data.plotter_device).change();
+        jQuery('#plotter_baudrate').val(response.data.plotter_baudrate).change();
+
         UIkit.modal('#modal-configFile').show();
       }
     })
     .catch(function(error) {
+      notify(error, 'danger')
       console.error(error);
     });
 }
@@ -232,6 +295,7 @@ function saveConfig() {
       }
     })
     .catch(function(error) {
+      notify(error, 'danger')
       console.error(error);
     });
 }
