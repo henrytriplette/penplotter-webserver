@@ -40,14 +40,13 @@ Configure options in *config.ini* using the web interface to set:
 
 ## ToDO
 
-- [x] Autoscroll console
-- [x] Remote pi shutdown
-- [x] Add tasmota control in sidebar
-- [x] Update config.ini via web interface
-- [x] Disable file deletion while printing
+- [x] Fix Mobile UI
+- [x] Add plotter name to toolbar
+- [x] Add defaults to configuration file
+- [x] Stop print via UI?
+- [x] List current printing filename
 
-- [ ] Stop print via UI?
-- [ ] List current printing filename
+- [ ] More plotter options?
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
