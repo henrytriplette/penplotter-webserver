@@ -2,4 +2,6 @@ pyserial
 requests
 Flask
 Flask-SocketIO
-vpype
+
+# now handled in pipx
+# vpype 
