@@ -17,7 +17,7 @@ From the home directory, run:
 
 ```bash
 curl -O https://raw.githubusercontent.com/henrytriplette/penplotter-webserver/main/install.sh
-chmod +x install.sh
+sudo chmod +x install.sh
 ```
 
 Then run it:

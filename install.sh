@@ -36,16 +36,16 @@ if [ ! -d "$dir" ] ; then
     echo "Reboot in 10 sec"
     sleep 10
     sudo reboot
-    else
-        echo ""
-        echo "Directory "$dir" already exists"
-        echo ""
-        echo "Upgrading packages"        
-        rm -rf "$dir"
-        git clone -q https://github.com/henrytriplette/penplotter-webserver "$dir" > /dev/null 
-        sudo pip install -r $dir/requirements.txt -U -q
-        # export PATH="$PATH:/home/pi/.local/bin"
-        pipx upgrade vpype
+else
+    echo ""
+    echo "Directory "$dir" already exists"
+    echo ""
+    echo "Upgrading packages"
+    rm -rf "$dir"
+    git clone -q https://github.com/henrytriplette/penplotter-webserver "$dir" > /dev/null 
+    dir="$HOME/webplotter"
+    cp $dir/config.ini.sample $dir/config.ini
+    sudo pip install -r $dir/requirements.txt -U -q
+    # export PATH="$PATH:/home/pi/.local/bin"
+    pipx upgrade vpype
 fi
-
-
