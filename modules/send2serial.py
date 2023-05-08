@@ -11,8 +11,8 @@ from serial import SerialException
 from flask_socketio import SocketIO, emit
 
 # import PySimpleGUI as sg
-import notification
-import globals
+import modules.notification as notification
+import modules.globals as globals
 
 # answer to <ESC>.O Output Extended Status Information [Manual: 10-42]
 EXT_STATUS_BUF_EMPTY = 0x08  # buffer empty

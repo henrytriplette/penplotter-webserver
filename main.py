@@ -7,9 +7,9 @@ from flask import Flask, Response, render_template, request, redirect, url_for, 
 from werkzeug.utils import secure_filename
 from flask_socketio import SocketIO, emit
 
-import globals
-import send2serial
-import tasmota
+import modules.globals as globals
+import modules.send2serial as send2serial
+import modules.tasmota as tasmota
 
 # Read Configuration
 config = configparser.ConfigParser()
