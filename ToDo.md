@@ -14,3 +14,4 @@
 
 - [ ] Stop print via UI?
 - [ ] List current printing filename
+- [ ] HPGL Preview?

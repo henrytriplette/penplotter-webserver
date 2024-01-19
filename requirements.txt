@@ -3,3 +3,4 @@ requests
 Flask
 Flask-SocketIO
 vpype
+svgwrite

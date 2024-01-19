@@ -7,9 +7,11 @@ from flask import Flask, Response, render_template, request, redirect, url_for, 
 from werkzeug.utils import secure_filename
 from flask_socketio import SocketIO, emit
 
-import globals
-import send2serial
-import tasmota
+import modules.globalvars as globalvars
+import modules.send2serial as send2serial
+import modules.tasmota as tasmota
+import modules.hpgl2svg as hpgl2svg
+import modules.utility as utility
 
 # Read Configuration
 config = configparser.ConfigParser()
@@ -174,6 +176,24 @@ def delete_file():
             socketio.emit('error', {'data': 'The file does not exist'})
             return 'The file does not exist'
 
+# Preview HPGL file
+@app.route('/preview_hpgl', methods=['GET', 'POST'])
+def preview_hpgl():
+    if request.method == "POST":
+        data = request.get_json(silent=True)
+        filename = data.get('filename')
+        filenameSvg = utility.replace_file_extension(filename, 'svg')
+
+        # Delete file
+        if os.path.exists(app.config['UPLOAD_PATH'] + "/" + filename):
+            hpgl2svg.parse_file(app.config['UPLOAD_PATH'] + "/" + filename, app.config['UPLOAD_PATH'] + "/" + filenameSvg)
+            socketio.emit('status_log', {'data': 'HPGL Preview: ' + filename})
+            return 'Converted: ' + filename
+        else:
+            socketio.emit('error', {'data': 'The file does not exist'})
+            return 'The file does not exist'
+
+
 # Get Plotter settings from UI
 @app.route('/start_plot', methods=['GET', 'POST'])
 def start_plot():
@@ -192,7 +212,7 @@ def start_plot():
 @app.route('/stop_plot', methods=['GET', 'POST'])
 def stop_plot():
     if request.method == "GET":
-        globals.printing = False
+        globalvars.printing = False
         return 'Plotter Stopped'
 
 # Start converting file using vpype
@@ -291,8 +311,8 @@ def connection(message):
 
 if __name__ == "__main__":
 
-    # Globals variables
-    globals.initialize()
+    # globalvars variables
+    globalvars.initialize()
 
     # app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
     socketio.run(app, host='0.0.0.0', port=5000, debug=True, allow_unsafe_werkzeug=True)

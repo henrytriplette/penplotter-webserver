@@ -15,6 +15,7 @@ function renderFileListElement(name) {
                   </a>
                 </div>
                 <div class="uk-width-auto uk-text-right panel-icons">
+                  <a href="#" class="uk-icon-link previewFile lock-edit" data-filename="${name}" title="Preview" data-uk-tooltip data-uk-icon="icon: camera"></a>
                   <a href="#" class="uk-icon-link deleteFile lock-edit" data-filename="${name}" title="Delete" data-uk-tooltip data-uk-icon="icon: close"></a>
                 </div>
               </div>`;

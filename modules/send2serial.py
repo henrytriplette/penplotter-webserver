@@ -11,8 +11,8 @@ from serial import SerialException
 from flask_socketio import SocketIO, emit
 
 # import PySimpleGUI as sg
-import notification
-import globals
+import modules.notification as notification
+import modules.globalvars as globalvars
 
 # answer to <ESC>.O Output Extended Status Information [Manual: 10-42]
 EXT_STATUS_BUF_EMPTY = 0x08  # buffer empty
@@ -122,7 +122,7 @@ def listComPorts():
 def sendToPlotter(socketio, hpglfile, port = 'COM3', baud = 9600, plotter = '7475a'):
     print(plotter)
 
-    globals.printing = True
+    globalvars.printing = True
     input_bytes = None
 
     try:
@@ -181,7 +181,7 @@ def sendToPlotter(socketio, hpglfile, port = 'COM3', baud = 9600, plotter = '747
 
     total_bytes_written = 0
 
-    while globals.printing == True:
+    while globalvars.printing == True:
         status = plotter_cmd(tty, b'\033.O', True)
         if (status & (EXT_STATUS_VIEW | EXT_STATUS_LEVER)):
             print('*** Printer is viewing plot, pausing data.')

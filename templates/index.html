@@ -544,6 +544,12 @@
             deleteFile(jQuery(this));
           });
 
+          // Handle HPGL Preview Generation
+          jQuery('body').on('click', '.previewFile', function (e) {
+            e.preventDefault();
+            previewFile(jQuery(this));
+          });
+
           // Handle list element conversion from SVG 2 HPGL
           jQuery('body').on('click', '.convertFile', function(e) {
             e.preventDefault();

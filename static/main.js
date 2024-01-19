@@ -75,6 +75,26 @@ function deleteFile(element) {
     .then(function() {});
 }
 
+// Handle file preview
+function previewFile(element) {
+  const filename = jQuery(element).data('filename');
+
+  axios.post('/preview_hpgl', { filename: filename })
+    .then(function (response) {
+      // handle success
+      if (response.status == 200) {
+        // Remove old content from list
+        notify(response.data, 'success')
+        console.log('preview_hpgl', response.data)
+      }
+    })
+    .catch(function (error) {
+      notify(error, 'danger')
+      console.error(error);
+    })
+    .then(function () { });
+}
+
 // Handle file conversion
 function convertFileModal(element) {
   const filename = jQuery(element).data('filename');
