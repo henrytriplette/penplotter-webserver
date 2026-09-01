@@ -13,17 +13,17 @@
   "devDependencies": {
     "@types/dropzone": "^5.7.9",
     "@types/uikit": "^3.14.5",
-    "sass": "^1.89.1",
+    "sass": "^1.103.1",
     "typescript": "~5.8.3",
-    "vite": "^6.3.5",
-    "vite-plugin-static-copy": "^3.0.0"
+    "vite": "^6.4.3",
+    "vite-plugin-static-copy": "^3.4.0"
   },
   "dependencies": {
     "@types/node": "^22.15.30",
-    "axios": "^1.9.0",
+    "axios": "^1.20.0",
     "dropzone": "^6.0.0-beta.2",
     "jquery": "^3.7.1",
-    "socket.io-client": "^4.8.1",
+    "socket.io-client": "^4.8.3",
     "uikit": "^3.23.9"
   }
 }
