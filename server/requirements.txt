@@ -1,7 +1,90 @@
-pyserial
-requests
-Flask
-Flask-Cors
-Flask-SocketIO
-simple-websocket
-vpype
+asteval==1.0.10
+    # via vpype
+bidict==0.24.1
+    # via python-socketio
+blinker==1.9.0
+    # via
+    #   flask
+    #   flask-socketio
+cachetools==7.1.8
+    # via vpype
+certifi==2026.7.22
+    # via requests
+charset-normalizer==3.5.1
+    # via requests
+click==8.5.0
+    # via
+    #   flask
+    #   flask-socketio
+    #   vpype
+dill==0.4.1
+    # via multiprocess
+flask==3.1.3
+    # via
+    #   -r requirements.in
+    #   flask-cors
+    #   flask-socketio
+flask-cors==6.0.5
+    # via -r requirements.in
+flask-socketio==5.6.1
+    # via -r requirements.in
+h11==0.16.0
+    # via wsproto
+idna==3.19
+    # via requests
+itsdangerous==2.2.0
+    # via flask
+jinja2==3.1.6
+    # via
+    #   flask
+    #   flask-socketio
+markupsafe==3.0.3
+    # via
+    #   flask
+    #   jinja2
+    #   werkzeug
+multiprocess==0.70.19
+    # via vpype
+numpy==2.5.2
+    # via
+    #   pnoise
+    #   scipy
+    #   shapely
+    #   vpype
+pnoise==0.2.0
+    # via vpype
+pyphen==0.15.0
+    # via vpype
+pyserial==3.5
+    # via -r requirements.in
+python-engineio==4.14.0
+    # via python-socketio
+python-socketio==5.16.4
+    # via flask-socketio
+requests==2.34.2
+    # via -r requirements.in
+scipy==1.18.1
+    # via vpype
+shapely==2.1.2
+    # via vpype
+simple-websocket==1.1.0
+    # via
+    #   -r requirements.in
+    #   python-engineio
+svgelements==1.9.6
+    # via vpype
+svgwrite==1.4.3
+    # via vpype
+tomli==2.4.1
+    # via vpype
+urllib3==2.7.0
+    # via requests
+vpype==1.15.0
+    # via -r requirements.in
+werkzeug==3.1.8
+    # via
+    #   flask
+    #   flask-cors
+    #   flask-socketio
+wsproto==1.3.2
+    # via simple-websocket

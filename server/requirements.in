@@ -1,0 +1,12 @@
+# Top-level dependencies for the pen plotter web server.
+# Edit this file, then regenerate the pinned requirements.txt with:
+#   uv pip compile --universal requirements.in -o requirements.txt
+# (or: pip-compile requirements.in)
+
+pyserial
+requests
+Flask
+Flask-Cors
+Flask-SocketIO
+simple-websocket
+vpype
