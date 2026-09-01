@@ -1,6 +1,7 @@
-venv/*
+venv
 __pycache__/*
 node_modules/*
 config.ini
 test/*
 .old
+dist/*

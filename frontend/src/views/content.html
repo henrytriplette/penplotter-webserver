@@ -1,25 +1,10 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Plotter Webserver</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <!-- UIkit CSS -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/css/uikit.min.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.css">
-
-        <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
-    </head>
-    <body>
-
       <!--HEADER-->
       <header id="top-head" class="uk-position-fixed">
         <div class="uk-container uk-container-expand uk-background-primary">
           <nav class="uk-navbar uk-light" data-uk-navbar="mode:click; duration: 250">
             <div class="uk-navbar-left">
               <div class="uk-navbar-item uk-hidden@m">
-                <a class="uk-logo" href="#"><img class="custom-logo" src="{{url_for('static', filename='img/logo.png')}}" alt=""></a>
+                <a class="uk-logo" href="#"><img class="custom-logo" src="static/img/logo.png" alt=""></a>
               </div>
               <ul class="uk-navbar-nav uk-visible@m">
                 <li><a href="#"><span class="plotter_name">Default Plotter</span></a></li>
@@ -47,10 +32,10 @@
       <!-- LEFT BAR -->
       <aside id="left-col" class="uk-light uk-visible@m">
         <div class="left-logo uk-flex uk-flex-middle">
-          <img class="custom-logo" src="{{url_for('static', filename='img/logo.png')}}" alt="">
+          <img class="custom-logo" src="static/img/logo.png" alt="">
         </div>
         <div class="left-content-box content-box-dark">
-          <img src="{{url_for('static', filename='img/user.png')}}" alt="" class="profile-img">
+          <img src="static/img/user.png" alt="" class="profile-img">
           <h4 class="uk-text-center uk-margin-remove-vertical text-light">Web Plotter</h4>
         </div>
 
@@ -120,7 +105,11 @@
                 </div>
                 <div id="uploadFiles-card" class="uk-card-body">
                   <div class="chart-container uk-panel uk-panel-scrollable">
-                    <form id="uploadFiles" action="{{ url_for('upload_files') }}" class="dropzone"></form>
+                    <form id="uploadFiles" action="/upload_files" class="dropzone">
+                      <div class="fallback">
+                        <input name="file" type="file" multiple />
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -340,6 +329,40 @@
       </div>
       <!-- File Conversion Modal -->
 
+      <!-- File Preview Modal -->
+      <div id="modal-previewFile" uk-modal>
+          <div class="uk-modal-dialog uk-card uk-card-default uk-card-small mac-card">
+            <div class="uk-card-header mac-browser-bar">
+              <div class="uk-grid uk-grid-small">
+                <div class="uk-width-auto"><h4>File Preview</h4></div>
+                <div class="uk-width-expand uk-text-right panel-icons">
+                  <a href="#" class="uk-icon-link mac-button mac-close uk-modal-close" title="Close" data-uk-tooltip data-uk-icon="icon: close"></a>
+                </div>
+              </div>
+            </div>
+            <div class="uk-modal-body">
+              <form id="previewData">
+                  <fieldset class="uk-fieldset uk-grid-small" uk-grid>
+
+                    <div class="uk-width-1-1@s">
+                      <label class="uk-form-label" for="convertFile">File Name</label>
+                      <div class="uk-margin-small">
+                          <input id="previewFile" class="uk-input" name="file" type="input" readonly>
+                      </div>
+                    </div>
+
+              </form>
+              
+              <canvas id="hpglCanvas" width="400" height="400"></canvas>
+
+              <div class="uk-text-right uk-margin-small-top">
+                  <button class="uk-button uk-button-primary startPreview" type="button">Preview</button>
+              </div>
+            </div>
+          </div>
+      </div>
+      <!-- File Preview Modal -->
+
       <!-- config modal -->
       <div id="modal-configFile" uk-modal>
           <div class="uk-modal-dialog uk-card uk-card-default uk-card-small mac-card">
@@ -451,172 +474,3 @@
           </div>
       </div>
       <!-- reboot modal -->
-
-      <!-- UIkit JS -->
-      <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/js/uikit.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/js/uikit-icons.min.js"></script>
-
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-      <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
-
-      <script src="{{url_for('static', filename='main.js')}}"></script>
-      <script src="{{url_for('static', filename='utility.js')}}"></script>
-
-      <script>
-        Dropzone.autoDiscover = false;
-
-        jQuery( document ).ready(function() {
-
-          // Websocket for printing status
-          var socket = io();
-
-          // Event handler for new connections.
-          // The callback function is invoked when a connection with the
-          // server is established.
-          socket.on('connect', function() {
-              socket.emit('connection', {data: 'Client connected!'});
-          });
-
-          // Set log window
-          socket.on('status_log', function(msg, cb) {
-              jQuery('#statusLog').append('<br>' + $('<div/>').text(msg.data).html());
-              scrollLog();
-          });
-
-          socket.on('error', function(msg, cb) {
-              jQuery('#statusLog').append('<br>' + $('<div class="error"/>').text(msg.data).html());
-              scrollLog()
-          });
-
-          // Display print progression
-          socket.on('print_progress', function(msg, cb) {
-              jQuery('.printProgress').val(msg.data);
-          });
-
-          // Lock file deletion on print start, unlock on stop
-          socket.on('lock_edit', function(msg, cb) {
-            console.log('lock_edit', msg.data);
-            if (msg.data == 'on') {
-              jQuery('.lock-edit').prop('disabled', true).addClass('uk-hidden');
-              jQuery('.unlock-edit').prop('disabled', false).removeClass('uk-hidden');
-            } else {
-              jQuery('.lock-edit').prop('disabled', false).removeClass('uk-hidden');
-              jQuery('.unlock-edit').prop('disabled', true).addClass('uk-hidden');
-            }
-          });
-
-          // Populate list on first start
-          updateFiles();
-          updatePorts();
-
-          // Fetch configuration data
-          updateConfiguration();
-
-          // Create uploader
-          const uploadFiles = new Dropzone("#uploadFiles");
-          uploadFiles.on("complete", function(file) {
-            updateFiles(); // Update file list on upload completed
-          });
-
-          // Update file
-          jQuery(".updateFiles").click(function(e) {
-            e.preventDefault();
-            updateFiles();
-          });
-
-          // Update ports
-          jQuery(".updatePorts").click(function(e) {
-            e.preventDefault();
-            updatePorts();
-          });
-
-          // Handle List element selection
-          jQuery('body').on('click', '.selectFile', function(e) {
-            e.preventDefault();
-            selectFile(jQuery(this));
-          });
-
-          // Handle List element deletion
-          jQuery('body').on('click', '.deleteFile', function(e) {
-            e.preventDefault();
-            deleteFile(jQuery(this));
-          });
-
-          // Handle list element conversion from SVG 2 HPGL
-          jQuery('body').on('click', '.convertFile', function(e) {
-            e.preventDefault();
-            convertFileModal(jQuery(this));
-          });
-
-          jQuery('body').on('click', '.startConversion', function(e) {
-            e.preventDefault();
-            convertFile();
-          });
-
-          // Clear Log
-          jQuery(".clearLog").click(function(e) {
-            e.preventDefault();
-            clearLog();
-          });
-
-          // Start Plot
-          jQuery(".startPlot").click(function(e) {
-            e.preventDefault();
-            startPlot();
-          });
-
-          // Stop Plot
-          jQuery(".stopPlot").click(function(e) {
-            e.preventDefault();
-            stopPlot();
-          });
-
-
-          // Show Cards
-          jQuery(".closeCard").click(function(e) {
-            e.preventDefault();
-            closeCard(jQuery(this));
-          });
-
-          // Hide Cards
-          jQuery(".showCard").click(function(e) {
-            e.preventDefault();
-            showCard(jQuery(this));
-          });
-
-          // Reboot Pi
-          jQuery(".actionReboot").click(function(e) {
-            e.preventDefault();
-            actionReboot();
-          });
-
-          // Poweroff Pi
-          jQuery(".actionPoweroff").click(function(e) {
-            e.preventDefault();
-            actionPoweroff();
-          });
-
-          // Toggle Tasmota device
-          jQuery(".actionTasmota").click(function(e) {
-            e.preventDefault();
-            actionTasmota();
-          });
-
-          // Open Config.ini file editor
-          jQuery(".actionOpenConfig").click(function(e) {
-            e.preventDefault();
-            actionOpenConfig();
-          });
-
-          // Save new data into Config.ini
-          jQuery(".saveConfig").click(function(e) {
-            e.preventDefault();
-            saveConfig();
-          });
-
-        })
-      </script>
-    </body>
-</html>

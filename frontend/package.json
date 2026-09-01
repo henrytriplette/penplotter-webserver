@@ -1,0 +1,29 @@
+{
+  "name": "penplotter-webserver-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "yarn dev",
+    "dev": "vite --config config/vite.dev.js",
+    "build": "vite build --config config/vite.build.js",
+    "preview": "vite preview",
+    "flush": "rm -r node_modules/.vite/deps"
+  },
+  "devDependencies": {
+    "@types/dropzone": "^5.7.9",
+    "@types/uikit": "^3.14.5",
+    "sass": "^1.89.1",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5",
+    "vite-plugin-static-copy": "^3.0.0"
+  },
+  "dependencies": {
+    "@types/node": "^22.15.30",
+    "axios": "^1.9.0",
+    "dropzone": "^6.0.0-beta.2",
+    "jquery": "^3.7.1",
+    "socket.io-client": "^4.8.1",
+    "uikit": "^3.23.9"
+  }
+}

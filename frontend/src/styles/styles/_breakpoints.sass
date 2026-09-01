@@ -1,0 +1,30 @@
+$breakpoints: (se: 375px, xe: 414px, small: 480px, medium: 720px, large: 960px, wide: 1200px)
+
+=breakpoint($name)
+  @if not map-has-key($breakpoints, $name)
+    @warn "Invalid breakpoint `#{$name}`."
+  @else
+    @media (min-width: map-get($breakpoints, $name))
+      @content
+
+// .content
+//   font: 1em/1.5 Helvetica, sans-serif
+//   width: 90%
+//   margin: 1em auto
+
+//   +breakpoint(small)
+//     font-size: 1.2em
+
+
+//   +breakpoint(medium)
+//     font-size: 1.4em
+//     width: 30em
+
+
+//   +breakpoint(large)
+//     font-size: 1.6em
+
+
+//   +breakpoint(wide)
+//     font-size: 1.8em
+    

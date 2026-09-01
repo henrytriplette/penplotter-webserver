@@ -1,5 +1,7 @@
 pyserial
 requests
 Flask
+Flask-Cors
 Flask-SocketIO
+simple-websocket
 vpype

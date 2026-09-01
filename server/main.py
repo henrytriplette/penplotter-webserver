@@ -3,9 +3,15 @@ import time
 import subprocess
 import configparser
 
-from flask import Flask, Response, render_template, request, redirect, url_for, abort, send_from_directory, jsonify
+from flask import Flask, flash, Response, render_template, request, redirect, url_for, abort, send_from_directory, jsonify
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from flask_socketio import SocketIO, emit
+
+# fix windows registry stuff
+import mimetypes
+mimetypes.add_type('application/javascript', '.js')
+mimetypes.add_type('text/css', '.css')
 
 import globals
 import send2serial
@@ -15,14 +21,24 @@ import tasmota
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-app = Flask(__name__)
+# instantiate the app
+app = Flask(__name__,
+  static_url_path='/static',
+  static_folder = "dist/static",
+  template_folder = "dist"
+)
+
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
-app.config['UPLOAD_EXTENSIONS'] = ['.svg', '.hpgl']
+app.config['UPLOAD_EXTENSIONS'] = ['svg', 'hpgl', 'png', 'jpg', 'jpeg']
 app.config['UPLOAD_PATH'] = 'uploads'
 app.config['SECRET_KEY'] = '#tiUJ791&jPYI9N7Kj'
 app.config['DEBUG'] = True
 
-socketio = SocketIO(app)
+# enable CORS
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+# enable SocketIO
+socketio = SocketIO(app, always_connect=True, async_mode='threading')
 
 def make_tree(path):
     tree = dict(name=os.path.basename(path), content=[])
@@ -131,16 +147,40 @@ def index():
     return render_template('index.html', files=files, configuration=configuration)
 
 # Upload
-@app.route('/', methods=['POST'])
-def upload_files():
-    uploaded_file = request.files['file']
-    filename = secure_filename(uploaded_file.filename)
-    if filename != '':
-        file_ext = os.path.splitext(filename)[1]
-        if file_ext not in app.config['UPLOAD_EXTENSIONS']:
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['UPLOAD_EXTENSIONS']
+           
+@app.route('/upload_files', methods=['POST'])
+def upload_file():
+    if request.method == 'POST':        
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
             return "Invalid image", 400
-        uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
-    return '', 204
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            return "Invalid image", 400
+        if file and allowed_file(file.filename):
+            print('File is allowed')
+            
+            # Save file to upload path
+            filename = secure_filename(file.filename)
+            print(os.path.join(app.config['UPLOAD_PATH'], filename))
+            file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+            return '', 204
+        
+        return "Invalid image", 400
+    
+        # uploaded_file = request.files['file']
+        # filename = secure_filename(uploaded_file.filename)
+        # if filename != '':
+        #     file_ext = os.path.splitext(filename)[1]
+        #     if file_ext not in app.config['UPLOAD_EXTENSIONS']:
+        #         return "Invalid image", 400
+        #     uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+        # return '', 204
 
 @app.route('/uploads/<filename>')
 def upload(filename):
@@ -173,6 +213,28 @@ def delete_file():
         else:
             socketio.emit('error', {'data': 'The file does not exist'})
             return 'The file does not exist'
+
+# Fetch Files for preview
+@app.route('/start_preview', methods=['POST'])
+def start_preview():
+    if request.method == "POST":
+        data = request.get_json()
+        file = data.get('file')
+        print('File to preview:', file)
+    
+        if file:
+            file_path = os.path.join(app.config['UPLOAD_PATH'], file)
+            if os.path.exists(file_path):
+                # Read the file and return its content
+                with open(file_path, 'r') as f:
+                    content = f.read()
+                return content
+            else:
+                return 'File not found', 404
+        else:
+            return 'No file specified', 400
+    else:
+        return 'No file specified', 400
 
 # Get Plotter settings from UI
 @app.route('/start_plot', methods=['GET', 'POST'])
