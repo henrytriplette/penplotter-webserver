@@ -19,6 +19,8 @@ This document is analysis only. No source, configuration, tests, or project stru
 | Low | 17 |
 | **Total** | **67** |
 
+**Remediation status (2026-09-02):** 16 findings are fixed — C-2, C-3, C-4, C-6, C-7, H-1, H-5, H-12, H-13, M-8, M-13, M-14, M-15, M-16, M-17, L-5 — each marked inline below. The five targeted were C-2, C-3, C-4, C-6+C-7 and H-1; the rest were either prerequisites for those (a working preview needs M-14 and M-15; C-2's new error path is only readable with H-12) or fell inside lines already being rewritten. Everything else in this document is still outstanding. Verification: the parser and canvas sizing were run against the three sample files in `server/uploads/` at 1x and 2x device pixel ratios plus ten synthetic edge cases (degenerate extents, hidden modal, garbage input), and `sendToPlotter` against a fake plotter covering normal completion, empty file, missing file, and an exception mid-plot.
+
 The application is a single-user appliance UI (a Raspberry Pi driving a pen plotter), and several findings are acceptable-by-design for a device on a trusted LAN. They are still listed, because the app binds `0.0.0.0`, ships `DEBUG = True`, and exposes unauthenticated `reboot`/`poweroff`/arbitrary-file endpoints — so the trust assumption is doing a lot of unstated work.
 
 The most consequential *functional* problems, independent of security posture, are:
@@ -53,6 +55,8 @@ rendering = subprocess.Popen(args, shell=True)
 ---
 
 ### C-2 — `NameError` on `percent` when the input file size is unknown
+
+> **Status: FIXED** (2026-09-02) — Fixed — the unknown-size branch is gone; an empty or unstat-able file now aborts with a reported error before the send loop.
 **Location:** `server/send2serial.py:128-134`, `server/send2serial.py:207-215`
 
 **Issue:** `input_bytes` stays `None` when the file is zero-length **or** when `os.stat` raises. The `else` branch of the progress block then formats a variable that was never bound:
@@ -74,6 +78,8 @@ The `except` at line 132 emits an error but does not return, so execution contin
 ---
 
 ### C-3 — Serial port, file handle, and print state leak on every plot
+
+> **Status: FIXED** (2026-09-02) — Fixed — the function body is wrapped in try/finally, which closes the port and file and resets `globals.printing` on every exit path, including exceptions.
 **Location:** `server/send2serial.py:122-218` (whole function)
 
 **Issue:** `sendToPlotter` opens `hpgl = open(hpglfile, 'rb')` at line 136 and `tty = serial.Serial(...)` at line 140/147. The function ends at line 218 — the last statement in the file. There is no `close()` on either handle on any path (normal EOF, user stop, or exception), and `globals.printing` is set to `True` at line 125 but never reset to `False`.
@@ -89,6 +95,8 @@ The `except` at line 132 emits an error but does not return, so execution contin
 ---
 
 ### C-4 — Tasmota is permanently disabled by a copy-paste bug
+
+> **Status: FIXED** (2026-09-02) — Fixed — reads `tasmota_enable` via `config.getboolean`, guards `TASMOTA_IP` on its own key, and gates on the boolean.
 **Location:** `server/tasmota.py:10-15`
 
 **Issue:**
@@ -135,6 +143,8 @@ file = app.config['UPLOAD_PATH'] + '/' + request.form.get('file')   # start_plot
 ---
 
 ### C-6 — HPGL preview always renders at scale `0`, so nothing is visible
+
+> **Status: FIXED** (2026-09-02) — Fixed — the parser now splits a path on every pen-up and the bounding box scans all points of all paths from index 0.
 **Location:** `frontend/src/display/hpgl.ts:28-82` (`parseHPGL`), `frontend/src/display/hpgl.ts:84-121` (`drawOnCanvas`)
 
 **Issue:** Two defects compound.
@@ -158,6 +168,8 @@ With `paths.length === 1`, the loop body never runs. `minX === maxX` and `minY =
 ---
 
 ### C-7 — Preview transform multiplies by the scale factor instead of dividing
+
+> **Status: FIXED** (2026-09-02) — Fixed — the transform divides by the scale, offsets by the bounding-box minimum, centres the drawing, and flips Y.
 **Location:** `frontend/src/display/hpgl.ts:114-121`, `frontend/src/display/hpgl.ts:130-141`
 
 **Issue:** `sx` and `sy` are computed as *data units per pixel* (`dx / canvasWidth`), so converting a point to screen space requires **dividing**. The render loop multiplies:
@@ -214,6 +226,8 @@ socketio.run(app, host='0.0.0.0', port=5000, debug=True, allow_unsafe_werkzeug=T
 ## High
 
 ### H-1 — `webplotter.service` points at a path that does not exist
+
+> **Status: FIXED** (2026-09-02) — Fixed — the unit points at `server/` with an absolute venv interpreter, and `install.sh` copies it from the repository root.
 **Location:** `webplotter.service:12-13`, `install.sh:32-34`
 
 **Issue:** The unit specifies:
@@ -274,6 +288,8 @@ while globals.printing == True:
 ---
 
 ### H-5 — The configured baud rate is accepted everywhere and used nowhere
+
+> **Status: FIXED** (2026-09-02) — Fixed incidentally — both `serial.Serial` calls now pass `baudrate = baud`. The UI still offers only 9600, so the selects remain worth widening.
 **Location:** `server/send2serial.py:122`, `server/send2serial.py:140`, `server/send2serial.py:147`
 
 **Issue:** `sendToPlotter(socketio, hpglfile, port='COM3', baud=9600, plotter='7475a')` declares a `baud` parameter, `main.py:71` passes `int(baudrate)` into it, and both `serial.Serial(...)` calls hardcode `baudrate = 9600` instead.
@@ -367,6 +383,8 @@ r = requests.get("http://{ip}/cm?cmnd=Power%20{status}".format(...)).content
 ---
 
 ### H-12 — Socket error payloads use two different key names
+
+> **Status: FIXED** (2026-09-02) — Fixed in `send2serial.py` — the three `{'error': ...}` payloads now use `{'data': ...}`. No shared schema yet, so the two sides can still drift.
 **Location:** `server/send2serial.py:134`, `server/send2serial.py:142`, `server/send2serial.py:149` vs. `frontend/src/main.ts:68-73`
 
 **Issue:** Three emits send `{'error': ...}` while every other emit in the codebase — and the sole client handler — uses `{'data': ...}`:
@@ -386,6 +404,8 @@ socket.on("error", (msg, cb) => {
 ---
 
 ### H-13 — `install.sh` installs Python packages system-wide with `sudo pip3`
+
+> **Status: FIXED** (2026-09-02) — Fixed — `install.sh` builds a venv and installs into it instead of `sudo pip3`. H-14 (libgeos, apt-key) is still outstanding.
 **Location:** `install.sh:29-31`
 
 **Issue:** The venv creation is commented out and replaced with a system-wide install:
@@ -540,6 +560,8 @@ updateConfiguration();
 ---
 
 ### M-8 — Progress reporting is off by one chunk and never reaches 100%
+
+> **Status: FIXED** (2026-09-02) — Fixed incidentally — the byte counter is incremented before the progress emit, and EOF emits a final 100.
 **Location:** `server/send2serial.py:207-211`, `server/send2serial.py:198-205`
 
 **Issue:** The percentage is computed from `total_bytes_written` *before* the current chunk is written (the increment is the last statement of the loop, line 218), and the loop `break`s at EOF (line 205) before emitting a final progress event.
@@ -610,6 +632,8 @@ document.querySelectorAll('.auto-scroll').forEach((el) => {
 ---
 
 ### M-13 — A new `HPGLViewer` is constructed on every preview click
+
+> **Status: FIXED** (2026-09-02) — sizing moved out of the constructor into a `resizeCanvas` step that measures the container (minus its padding) and derives the height from the drawing's aspect ratio, clamped to 60% of the viewport; the backing store is scaled by `devicePixelRatio`. The viewer is now built once and reused.
 **Location:** `frontend/src/core/actions.ts:193-195`, `frontend/src/display/hpgl.ts:17-18`
 
 **Issue:** Each click builds a fresh viewer over the same canvas, and the constructor resizes it as a side effect:
@@ -626,6 +650,8 @@ this.canvas.width = window.innerWidth / 3 - 55;
 ---
 
 ### M-14 — `PA` and `PR` with coordinates are parsed as mode switches only
+
+> **Status: FIXED** (2026-09-02) — Fixed — `PA`/`PR` now apply any coordinates they carry. Required for C-6: `Anca01.hpg` puts all 7,990 of its moves on `PA`.
 **Location:** `frontend/src/display/hpgl.ts:49-54`
 
 **Issue:** The parser treats `PA`/`PR` purely as mode flags and discards any coordinates on them:
@@ -645,6 +671,8 @@ case "PA":
 ---
 
 ### M-15 — Parser produces `undefined` coordinates on argument-less pen commands
+
+> **Status: FIXED** (2026-09-02) — Fixed — `parseArgs` returns an empty list for argument-less and malformed commands, and only whole pairs are consumed.
 **Location:** `frontend/src/display/hpgl.ts:42`, `frontend/src/display/hpgl.ts:58-68`
 
 **Issue:** `cmd.slice(2).split(",").map(Number)` on a bare `PU` yields `[0]` — because `''.split(',')` returns `['']` and `Number('')` is `0`, not `NaN`. The pair loop then runs once with `args[1] === undefined`:
@@ -664,6 +692,8 @@ The declared type is `{ x: number; y: number; draw: boolean }`, so `undefined` e
 ---
 
 ### M-16 — Unknown HPGL commands trigger a `console.warn` per occurrence
+
+> **Status: FIXED** (2026-09-02) — Fixed incidentally — unsupported codes are collected in a Set and logged once.
 **Location:** `frontend/src/display/hpgl.ts:73-74`
 
 **Issue:** The `default` case warns for every unrecognized two-character code. The parser handles only `IN`, `PA`, `PR`, `PU`, `PD`, `SP` — `vpype`'s HP7475A output also emits `VS`, `LT`, `PW`, `WU`, and others routinely.
@@ -675,6 +705,8 @@ The declared type is `{ x: number; y: number; draw: boolean }`, so `undefined` e
 ---
 
 ### M-17 — `drawOnCanvas` takes parameters it ignores or overwrites
+
+> **Status: FIXED** (2026-09-02) — Fixed incidentally — `drawOnCanvas` is now a zero-argument method reading instance state.
 **Location:** `frontend/src/display/hpgl.ts:84-121`
 
 **Issue:** The signature is `drawOnCanvas(paths, ctx, scale = 0.05)`, but:
@@ -802,6 +834,8 @@ Unused names in Python; in `main.ts` both `$` and `jQuery` are used interchangea
 ---
 
 ### L-5 — Dead field: `HPGLViewer.color`
+
+> **Status: FIXED** (2026-09-02) — Fixed — `color` is applied as `strokeStyle`, and changed from white (invisible on the white fill) to `#222222`.
 **Location:** `frontend/src/display/hpgl.ts:8`, `frontend/src/display/hpgl.ts:15`
 
 Assigned twice (field initializer and constructor) and never read — `drawOnCanvas` never sets `strokeStyle`, so paths render in the canvas default black on the white fill from line 126. **Recommendation:** Either apply it (`ctx.strokeStyle = this.color`) or remove it. Note that `"white"` on a white background would render nothing.

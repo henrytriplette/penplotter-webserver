@@ -9,13 +9,17 @@ config.read('config.ini')
 
 TASMOTA_ENABLE = False
 if (config.has_option('tasmota', 'tasmota_enable')):
-    TASMOTA_ENABLE = config['tasmota']['tasmota_ip']
+    try:
+        TASMOTA_ENABLE = config.getboolean('tasmota', 'tasmota_enable')
+    except ValueError:
+        print('Invalid tasmota_enable in config.ini, expected true or false')
+        TASMOTA_ENABLE = False
 TASMOTA_IP = False
-if (config.has_option('tasmota', 'tasmota_enable')):
+if (config.has_option('tasmota', 'tasmota_ip')):
     TASMOTA_IP = config['tasmota']['tasmota_ip']
 
 def tasmota_setStatus(socketio, status):
-    if TASMOTA_ENABLE == 'true':
+    if TASMOTA_ENABLE:
         if status == 'on' or status == 'off':
             try:
                 r = requests.get("http://{ip}/cm?cmnd=Power%20{status}".format(ip=TASMOTA_IP, status=status.capitalize() )).content
@@ -41,7 +45,7 @@ def tasmota_setStatus(socketio, status):
         return False
 
 def tasmota_setToggle(socketio):
-    if TASMOTA_ENABLE == 'true':
+    if TASMOTA_ENABLE:
         try:
             r = requests.get("http://{ip}/cm?cmnd=Power%20TOGGLE".format(ip=TASMOTA_IP)).content
             return r

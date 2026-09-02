@@ -123,96 +123,111 @@ def sendToPlotter(socketio, hpglfile, port = 'COM3', baud = 9600, plotter = '747
     print(plotter)
 
     globals.printing = True
-    input_bytes = None
+    tty = None
+    hpgl = None
 
     try:
-        ss = os.stat(hpglfile)
-        if ss.st_size != 0:
-            input_bytes = ss.st_size
-    except Exception as e:
-        print('Error stat\'ing file', hpglfile, str(e))
-        socketio.emit('error', {'error': 'Error stat\'ing file'})
-
-    hpgl = open(hpglfile, 'rb')
-
-    if (plotter == 'mp4200'):
+        # Total size is only needed to report progress as a percentage; a file
+        # we cannot stat is one we cannot stream either, so bail out here.
         try:
-            tty = serial.Serial(port = port, baudrate = 9600, parity = serial.PARITY_NONE, stopbits = serial.STOPBITS_ONE, bytesize = serial.EIGHTBITS, xonxoff = True, timeout = 2.0)
-        except SerialException as e:
-            socketio.emit('error', {'error': repr(e)})
-            print(repr(e))
-            return False
-    else:
-        try:
-            tty = serial.Serial(port, baudrate = 9600, timeout=2.0)
-        except SerialException as e:
-            socketio.emit('error', {'error': repr(e)})
-            print(repr(e))
+            input_bytes = os.stat(hpglfile).st_size
+        except OSError as e:
+            print('Error stat\'ing file', hpglfile, str(e))
+            socketio.emit('error', {'data': 'Error stat\'ing file ' + str(hpglfile)})
             return False
 
-    # <ESC>.@<dec>;<dec>:
-    #  1st parameter is buffer size 0..1024, optional
-    #  2nd parameter is bit flags for operation mode
-    #     0x01 : enable HW handhaking
-    #     0x02 : ignored
-    #     0x04 : monitor mode 1 if set, mode 0 if unset (for terminal)
-    #     0x08 : 0: disable monitor mode, 1: enable monitor mode
-    #     0x10 : 0: normal mode, 1: block mode
-    try:
-        plotter_cmd(tty, b'\033.@;0:')  # Plotter Configuration [Manual 10-27]
-        plotter_cmd(tty, b'\033.Y')  # Plotter On [Manual 10-26]
-        plotter_cmd(tty, b'\033.K')  # abort graphics
-        plotter_cmd(tty, b'IN;')  # HPGL initialize
-#        plotter_cmd(tty, b'\033.0')  # raise error
-        # Output Buffer Size [Manual 10-36]
-        bufsz = plotter_cmd(tty, b'\033.L', True)
-    except HPGLError as e:
-        print('*** Error initializing the plotter!')
-        print(e)
+        if input_bytes == 0:
+            socketio.emit('error', {'data': 'File is empty: ' + str(hpglfile)})
+            return False
 
-        socketio.emit('error', {'data': '*** Error initializing the plotter!'})
-        socketio.emit('error', {'data': str(e)})
+        if (plotter == 'mp4200'):
+            try:
+                tty = serial.Serial(port = port, baudrate = baud, parity = serial.PARITY_NONE, stopbits = serial.STOPBITS_ONE, bytesize = serial.EIGHTBITS, xonxoff = True, timeout = 2.0)
+            except SerialException as e:
+                socketio.emit('error', {'data': repr(e)})
+                print(repr(e))
+                return False
+        else:
+            try:
+                tty = serial.Serial(port, baudrate = baud, timeout=2.0)
+            except SerialException as e:
+                socketio.emit('error', {'data': repr(e)})
+                print(repr(e))
+                return False
 
-        # sys.exit(1)
-        return
+        hpgl = open(hpglfile, 'rb')
 
-    print('Buffer size of plotter is', bufsz, 'bytes.')
-    socketio.emit('status_log', {'data': 'Buffer size of plotter is ' + str(bufsz) + ' bytes.'})
+        # <ESC>.@<dec>;<dec>:
+        #  1st parameter is buffer size 0..1024, optional
+        #  2nd parameter is bit flags for operation mode
+        #     0x01 : enable HW handhaking
+        #     0x02 : ignored
+        #     0x04 : monitor mode 1 if set, mode 0 if unset (for terminal)
+        #     0x08 : 0: disable monitor mode, 1: enable monitor mode
+        #     0x10 : 0: normal mode, 1: block mode
+        try:
+            plotter_cmd(tty, b'\033.@;0:')  # Plotter Configuration [Manual 10-27]
+            plotter_cmd(tty, b'\033.Y')  # Plotter On [Manual 10-26]
+            plotter_cmd(tty, b'\033.K')  # abort graphics
+            plotter_cmd(tty, b'IN;')  # HPGL initialize
+#            plotter_cmd(tty, b'\033.0')  # raise error
+            # Output Buffer Size [Manual 10-36]
+            bufsz = plotter_cmd(tty, b'\033.L', True)
+        except HPGLError as e:
+            print('*** Error initializing the plotter!')
+            print(e)
 
-    total_bytes_written = 0
+            socketio.emit('error', {'data': '*** Error initializing the plotter!'})
+            socketio.emit('error', {'data': str(e)})
 
-    while globals.printing == True:
-        status = plotter_cmd(tty, b'\033.O', True)
-        if (status & (EXT_STATUS_VIEW | EXT_STATUS_LEVER)):
-            print('*** Printer is viewing plot, pausing data.')
-            socketio.emit('status_log', {'data': '*** Printer is viewing plot, pausing data.'})
-            time.sleep(5.0)
-            continue
+            return False
 
-        bufsz = plotter_cmd(tty, b'\033.B', True)
-        if bufsz < 256:
-            sys.stdout.flush()
-            time.sleep(0.25)
-            continue
+        print('Buffer size of plotter is', bufsz, 'bytes.')
+        socketio.emit('status_log', {'data': 'Buffer size of plotter is ' + str(bufsz) + ' bytes.'})
 
-        data = hpgl.read(bufsz - 128)
-        bufsz_read = len(data)
+        total_bytes_written = 0
 
-        if bufsz_read == 0:
-            print('*** EOF reached, exiting.')
-            notification.telegram_sendNotification('*** EOF reached, exiting.')
-            socketio.emit('status_log', {'data': '*** EOF reached, exiting.'})
-            break
+        while globals.printing == True:
+            status = plotter_cmd(tty, b'\033.O', True)
+            if (status & (EXT_STATUS_VIEW | EXT_STATUS_LEVER)):
+                print('*** Printer is viewing plot, pausing data.')
+                socketio.emit('status_log', {'data': '*** Printer is viewing plot, pausing data.'})
+                time.sleep(5.0)
+                continue
 
-        if input_bytes != None:
+            bufsz = plotter_cmd(tty, b'\033.B', True)
+            if bufsz < 256:
+                sys.stdout.flush()
+                time.sleep(0.25)
+                continue
+
+            data = hpgl.read(bufsz - 128)
+            bufsz_read = len(data)
+
+            if bufsz_read == 0:
+                print('*** EOF reached, exiting.')
+                notification.telegram_sendNotification('*** EOF reached, exiting.')
+                socketio.emit('status_log', {'data': '*** EOF reached, exiting.'})
+                socketio.emit('print_progress', {'data': '100.00'})
+                break
+
+            tty.write(data)
+            total_bytes_written += bufsz_read
+
             percent = 100.0 * total_bytes_written/input_bytes
             print(f'{percent:.2f}%, {total_bytes_written} byte written.')
             socketio.emit('status_log', {'data': f'{percent:.2f}%, {total_bytes_written} byte written.'})
             socketio.emit('print_progress', {'data': f'{percent:.2f}'})
 
-        else:
-            print(f'{percent:.2f}%, {bufsz_read} byte added.')
-            socketio.emit('status_log', {'data': f'{percent:.2f}%, {bufsz_read} byte added.'})
+        return True
 
-        tty.write(data)
-        total_bytes_written += bufsz_read
+    finally:
+        # Runs on every exit: normal EOF, a stop from the UI, or an exception.
+        # Without this the serial port stays open and the next plot cannot
+        # acquire it, and printing stays True so the loop guard is meaningless.
+        globals.printing = False
+
+        if hpgl is not None:
+            hpgl.close()
+        if tty is not None:
+            tty.close()

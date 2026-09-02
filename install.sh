@@ -25,11 +25,11 @@ yarn
 yarn build
 # Install backend dependencies
 cd ../server
-# python3 -m venv venv
-# source venv/bin/activate
-sudo pip3 install -r requirements.txt
-sudo cp config.ini.sample config.ini
-sudo cp webplotter.service /etc/systemd/system/
+python3 -m venv venv
+venv/bin/pip install --upgrade pip
+venv/bin/pip install -r requirements.txt
+cp config.ini.sample config.ini
+sudo cp ../webplotter.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable webplotter
 sudo systemctl start webplotter

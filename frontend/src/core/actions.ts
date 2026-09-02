@@ -7,6 +7,10 @@ import { notify } from '../utils/utility';
 import { updatePorts } from './plotter';
 import { HPGLViewer } from '../display/hpgl';
 
+// Built on first preview and reused; the canvas element is created once, with
+// the rest of the view, and is never replaced.
+let hpglViewer: HPGLViewer | null = null;
+
 // Display card
 export function closeCard(element: HTMLElement) {
   const card = jQuery(element).data('card');
@@ -190,8 +194,15 @@ export function startPreview() {
         notify('Preview started', 'success');
 
         // Show preview
-        const canvas = document.getElementById('hpglCanvas') as HTMLCanvasElement;
-        const hpglViewer = new HPGLViewer(canvas);
+        const canvas = document.getElementById('hpglCanvas') as HTMLCanvasElement | null;
+        if (!canvas) {
+          notify('Preview canvas is missing from the page', 'danger');
+          return;
+        }
+
+        // Reuse the viewer: it re-measures the canvas on every load, so there
+        // is no reason to rebuild it per preview.
+        if (!hpglViewer) hpglViewer = new HPGLViewer(canvas);
         hpglViewer.loadHPGL(response.data);
       }
     })

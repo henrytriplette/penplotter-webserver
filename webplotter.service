@@ -8,8 +8,8 @@ WantedBy=multi-user.target
 
 [Service]
 User=pi
-WorkingDirectory=/home/pi/webplotter
-ExecStart= python3 /home/pi/webplotter/main.py
+WorkingDirectory=/home/pi/webplotter/server
+ExecStart=/home/pi/webplotter/server/venv/bin/python /home/pi/webplotter/server/main.py
 TimeoutSec=600
 Restart=on-failure
 RuntimeDirectoryMode=755
